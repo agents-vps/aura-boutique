@@ -24,12 +24,12 @@
           colors: {
             luxury: {
               black: '#0B0B0C',
-              charcoal: '#111112', // Simplified: merged charcoal with black
-              darkGray: '#111112', // Simplified: merged with charcoal
+              charcoal: '#111112', // Unified black-charcoal
+              darkGray: '#111112',
               cream: '#FAF8F5',
-              sand: '#FAF8F5',     // Simplified: merged sand with cream
-              gold: '#1B365D',       // Tried 4: Bleu de Minuit
-              accentGold: '#1B365D', // Tried 4: Bleu de Minuit
+              sand: '#FAF8F5',     // Unified light neutral
+              gold: '#1B365D',     // Tried 4: Royal Midnight Blue
+              accentGold: '#1B365D',
               muted: '#8E8E93'
             }
           }
@@ -50,29 +50,73 @@
       background: #0B0B0C;
     }
     ::-webkit-scrollbar-thumb {
-      background: #C5A880;
+      background: #1B365D; /* Midnight blue scrollbar */
       border-radius: 3px;
+    }
+
+    /* Snap Scroll Container settings */
+    .snap-container {
+      scroll-snap-type: y mandatory;
+      overflow-y: scroll;
+      height: 100vh;
+      width: 100%;
+      scrollbar-width: none;
+    }
+    .snap-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Sticky Overlapping Slides (Zara Scroll) */
+    .snap-slide {
+      scroll-snap-align: start;
+      height: 100vh;
+      width: 100%;
+      position: sticky;
+      top: 0;
+      overflow: hidden;
     }
 
     /* Custom Transitions & Animations */
     .theme-transition {
       transition: background-color 0.8s cubic-bezier(0.16, 1, 0.3, 1), color 0.8s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.8s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .fade-in-up {
-      animation: fadeInUp 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    
+    /* Couture Fade: Elements slide up and fade in on viewport intersection */
+    .reveal-item {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    .reveal-item.active {
+      opacity: 1;
+      transform: translateY(0);
     }
 
-    /* Asymmetric & Hover Styling */
+    /* Micro-zoom background image transitions */
+    .bg-zoom-image {
+      transform: scale(1.08);
+      transition: transform 2.2s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: transform;
+    }
+    .bg-zoom-image.active {
+      transform: scale(1);
+    }
+
+    /* Underlying Dimming Layer for overlapping slides */
+    .slide-overlay {
+      position: absolute;
+      inset: 0;
+      background: black;
+      opacity: 0;
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+      z-index: 5;
+    }
+    .snap-slide.covered .slide-overlay {
+      opacity: 0.3; /* Spatial dimming */
+    }
+
+    /* Editorial Styling */
     .hover-zoom img {
       transition: transform 1.8s cubic-bezier(0.16, 1, 0.3, 1);
     }
@@ -91,7 +135,7 @@
       height: 1px;
       bottom: -4px;
       left: 0;
-      background-color: #C5A880;
+      background-color: #1B365D;
       transform-origin: bottom right;
       transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
@@ -106,17 +150,17 @@
     }
     @keyframes hotspotPulse {
       0% {
-        box-shadow: 0 0 0 0 rgba(197, 168, 128, 0.7);
+        box-shadow: 0 0 0 0 rgba(27, 54, 93, 0.7);
       }
       70% {
-        box-shadow: 0 0 0 10px rgba(197, 168, 128, 0);
+        box-shadow: 0 0 0 10px rgba(27, 54, 93, 0);
       }
       100% {
-        box-shadow: 0 0 0 0 rgba(197, 168, 128, 0);
+        box-shadow: 0 0 0 0 rgba(27, 54, 93, 0);
       }
     }
 
-    /* Active States */
+    /* Drawer/Modal triggers */
     .drawer-open {
       transform: translateX(0) !important;
     }
@@ -132,13 +176,13 @@
     /* Counter Pulse Bounce (Doherty Threshold) */
     @keyframes counterBounce {
       0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.4); background-color: #C5A880; color: #0B0B0C; }
+      50% { transform: scale(1.4); background-color: #1B365D; color: #fff; }
     }
     .counter-pulse {
       animation: counterBounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
-    /* View Swapping Transitions */
+    /* View swapping animations */
     .view-hidden {
       display: none !important;
       opacity: 0;
@@ -153,7 +197,7 @@
     }
   </style>
 </head>
-<body class="bg-luxury-cream text-luxury-black font-sans selection:bg-luxury-gold selection:text-luxury-black overflow-x-hidden theme-transition" id="body">
+<body class="bg-luxury-cream text-luxury-black font-sans selection:bg-luxury-gold selection:text-white overflow-hidden theme-transition" id="body">
 
   <!-- ==================== ATMOSPHÈRE SWITCHER (THEME TOGGLER) ==================== -->
   <div class="fixed bottom-6 left-6 z-50 flex items-center space-x-2 bg-luxury-black/90 backdrop-blur-md px-3 py-2.5 rounded-full border border-white/10 text-white shadow-xl text-[10px] uppercase letter-spacing-wide font-medium" id="theme-switcher-container">
@@ -192,7 +236,7 @@
         <a href="#shoppable" onclick="showView('store')" class="hidden lg:inline hover:text-luxury-gold transition-colors gold-link-effect">Galerie Sociale</a>
         <button class="hover:text-luxury-gold transition-colors focus:outline-none relative" onclick="openCart()">
           <span class="mr-1">Bag</span>
-          <span id="cart-count" class="bg-luxury-gold text-luxury-black font-semibold text-[9px] px-1.5 py-0.5 rounded-full absolute -top-2.5 -right-3.5 border border-luxury-black">0</span>
+          <span id="cart-count" class="bg-luxury-gold text-white font-semibold text-[9px] px-1.5 py-0.5 rounded-full absolute -top-2.5 -right-3.5 border border-luxury-black">0</span>
         </button>
       </div>
     </div>
@@ -220,25 +264,26 @@
   </header>
 
 
-  <!-- ==================== VIEW 1: MAIN STOREFRONT & LANDING ==================== -->
-  <main id="view-store" class="view-visible">
+  <!-- ==================== VIEW 1: MAIN STOREFRONT & LANDING (SNAP-SCROLLING OVERLAPS) ==================== -->
+  <main id="view-store" class="view-visible snap-container">
     
-    <!-- Hero Banner -->
-    <section class="relative h-screen bg-luxury-black overflow-hidden flex items-center">
-      <div class="absolute inset-0 opacity-40">
-        <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1920&q=80" alt="Aura Haute Couture" class="w-full h-full object-cover object-top scale-105 animate-[scaleOut_20s_infinite_alternate]">
+    <!-- Slide 1: Hero Banner (z-10) -->
+    <section class="snap-slide z-10" id="slide-hero">
+      <div class="slide-overlay"></div>
+      <div class="absolute inset-0">
+        <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1920&q=80" alt="Aura Haute Couture" class="w-full h-full object-cover object-top bg-zoom-image">
       </div>
       <div class="absolute inset-0 bg-gradient-to-t from-luxury-black via-luxury-black/30 to-luxury-black/80"></div>
-      <div class="relative max-w-7xl mx-auto px-6 md:px-12 w-full pt-20 z-10 flex flex-col items-center text-center fade-in-up">
-        <span class="text-xs uppercase tracking-[0.4em] text-luxury-gold mb-4 font-light letter-spacing-extra-wide animate-pulse">L'ÉQUILIBRE DU SILENCE</span>
-        <h1 class="font-serif text-5xl md:text-8xl lg:text-9xl font-extralight text-white leading-none tracking-wide text-wrap mb-6 select-none">
+      <div class="relative max-w-7xl mx-auto px-6 md:px-12 w-full h-full pt-20 z-10 flex flex-col justify-center items-center text-center">
+        <span class="text-xs uppercase tracking-[0.4em] text-luxury-gold mb-4 font-light letter-spacing-extra-wide animate-pulse reveal-item">L'ÉQUILIBRE DU SILENCE</span>
+        <h1 class="font-serif text-5xl md:text-8xl lg:text-9xl font-extralight text-white leading-none tracking-wide text-wrap mb-6 select-none reveal-item">
           Le Souffle de <br class="hidden md:inline"><span class="italic font-light">l'Atemporel</span>
         </h1>
-        <p class="text-sm md:text-base font-light text-white/70 max-w-lg mx-auto tracking-wide leading-relaxed mb-10 font-sans">
+        <p class="text-sm md:text-base font-light text-white/70 max-w-lg mx-auto tracking-wide leading-relaxed mb-10 font-sans reveal-item">
           Une convergence poétique entre le drapé sculptural de la haute couture et le secret minéral de la joaillerie d'exception.
         </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <a href="#featured-products" class="px-8 py-3.5 bg-white text-luxury-black text-[11px] uppercase letter-spacing-wide font-medium transition-all hover:bg-luxury-gold hover:text-luxury-black duration-300 shadow-xl w-60 sm:w-auto">
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center reveal-item">
+          <a href="#featured-products" class="px-8 py-3.5 bg-white text-luxury-black text-[11px] uppercase letter-spacing-wide font-medium transition-all hover:bg-luxury-gold hover:text-white duration-300 shadow-xl w-60 sm:w-auto">
             Découvrir la Collection
           </a>
           <a href="#customizer" class="px-8 py-3.5 border border-white/30 text-white text-[11px] uppercase letter-spacing-wide font-medium transition-all hover:border-luxury-gold hover:text-luxury-gold duration-300 bg-luxury-black/40 backdrop-blur-sm w-60 sm:w-auto">
@@ -254,385 +299,293 @@
       </div>
     </section>
 
-    <!-- Brand Philosophy -->
-    <section class="py-24 md:py-36 theme-transition" id="story">
+    <!-- Slide 2: Brand Philosophy (z-20) -->
+    <section class="snap-slide z-20 theme-transition flex items-center bg-luxury-cream dark:bg-luxury-black" id="slide-story">
+      <div class="slide-overlay"></div>
       <div class="max-w-5xl mx-auto px-6 text-center">
-        <span class="text-luxury-gold text-xs uppercase tracking-[0.3em] font-medium block mb-6">HISTOIRE D'ARTISANS</span>
-        <h2 class="font-serif text-3xl md:text-5xl lg:text-6xl text-inherit font-light leading-snug mb-8 max-w-4xl mx-auto">
+        <span class="text-luxury-gold text-xs uppercase tracking-[0.3em] font-medium block mb-6 reveal-item">HISTOIRE D'ARTISANS</span>
+        <h2 class="font-serif text-3xl md:text-5xl lg:text-6xl text-inherit font-light leading-snug mb-8 max-w-4xl mx-auto reveal-item">
           "Habiller le corps d'un drapé d'or pur, couronner la peau d'un fil d'obsidienne."
         </h2>
-        <div class="w-16 h-[1px] bg-luxury-gold/50 mx-auto mb-8"></div>
-        <p class="font-serif text-lg md:text-xl text-inherit/70 italic max-w-2xl mx-auto leading-relaxed mb-6">
+        <div class="w-16 h-[1px] bg-luxury-gold/50 mx-auto mb-8 reveal-item"></div>
+        <p class="font-serif text-lg md:text-xl text-inherit/70 italic max-w-2xl mx-auto leading-relaxed mb-6 reveal-item">
           Fondé sous le ciel azur de la Côte d'Azur, l'Atelier AURA imagine une couture silencieuse et des parures minérales qui dialoguent en parfaite harmonie. Nos tissus proviennent des filatures historiques de Lyon, tandis que nos pierres précieuses sont façonnées au cœur de l'Atelier de Haute Joaillerie de la maison.
         </p>
-        <p class="text-xs uppercase tracking-widest text-luxury-muted font-medium">
+        <p class="text-xs uppercase tracking-widest text-luxury-muted font-medium reveal-item">
           — Alexandre D., Directeur Artistique
         </p>
       </div>
     </section>
 
-    <!-- Asymmetric Lookbook Showcase -->
-    <section class="py-24 md:py-36 border-t border-b border-luxury-gold/10 theme-transition bg-opacity-40" id="collections">
-      <div class="max-w-7xl mx-auto px-6 md:px-12">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-16 items-start">
-          <div class="lg:col-span-5 space-y-6">
-            <span class="text-luxury-gold text-xs uppercase tracking-[0.3em] font-medium block">L'ESTHÉTIQUE STRUCTURELLE</span>
-            <h2 class="font-serif text-4xl md:text-6xl font-light text-inherit leading-tight">L'Asymétrie des Silhouettes</h2>
-            <p class="text-sm font-light text-luxury-muted leading-relaxed max-w-md">
+    <!-- Slide 3: Asymmetric Lookbook Showcase (z-30) -->
+    <section class="snap-slide z-30 theme-transition flex items-center bg-luxury-cream dark:bg-luxury-black border-t border-b border-luxury-gold/10" id="slide-collections">
+      <div class="slide-overlay"></div>
+      <div class="max-w-7xl mx-auto px-6 md:px-12 w-full">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-10 items-start">
+          <div class="lg:col-span-5 space-y-4">
+            <span class="text-luxury-gold text-xs uppercase tracking-[0.3em] font-medium block reveal-item">L'ESTHÉTIQUE STRUCTURELLE</span>
+            <h2 class="font-serif text-4xl md:text-5xl font-light text-inherit leading-tight reveal-item">L'Asymétrie des Silhouettes</h2>
+            <p class="text-sm font-light text-luxury-muted leading-relaxed max-w-md reveal-item">
               Inspirés de la simplicité scandinave et de la rigueur architecturale, nos volumes se construisent par décalage, créant une tension graphique unique entre l'étoffe fluide et le métal précieux rigide.
             </p>
           </div>
           <div class="lg:col-span-7 flex justify-end">
-            <div class="text-[10px] uppercase letter-spacing-wide font-semibold text-luxury-gold border border-luxury-gold/30 px-6 py-4 flex items-center space-x-3 rounded-sm">
+            <div class="text-[10px] uppercase letter-spacing-wide font-semibold text-luxury-gold border border-luxury-gold/30 px-6 py-4 flex items-center space-x-3 rounded-sm reveal-item">
               <span>SÉRIE LIMITÉE — CONFECTION 2026</span>
             </div>
           </div>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
-          <div class="md:col-span-7 relative h-[60vh] md:h-[80vh] overflow-hidden group hover-zoom rounded-sm shadow-xl" id="couture">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+          <div class="md:col-span-7 relative h-[45vh] overflow-hidden group hover-zoom rounded-sm shadow-xl reveal-item" id="couture">
             <img src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=1200&q=80" alt="Haute Couture Silhouette" class="w-full h-full object-cover">
-            <div class="absolute inset-0 bg-gradient-to-t from-luxury-black via-luxury-black/10 to-transparent transition-opacity duration-700"></div>
-            <div class="absolute bottom-10 left-10 right-10 text-white z-10">
-              <span class="text-luxury-gold text-xs uppercase tracking-widest font-semibold block mb-2">SCULPTURES TEXTILES</span>
-              <h3 class="font-serif text-3xl md:text-4xl font-light mb-3">La Haute Couture</h3>
-              <p class="text-xs text-white/70 max-w-sm font-light mb-4">
-                Silhouettes sculpturales drapées dans des soies lyonnaises et des laines brutes double face.
-              </p>
-              <a href="#featured-products" class="inline-flex items-center text-[10px] uppercase tracking-widest text-luxury-gold font-semibold gold-link-effect">
-                Explorer les pièces &rarr;
-              </a>
+            <div class="absolute inset-0 bg-gradient-to-t from-luxury-black via-luxury-black/10 to-transparent"></div>
+            <div class="absolute bottom-6 left-6 right-6 text-white z-10">
+              <span class="text-luxury-gold text-[10px] uppercase tracking-widest font-semibold block mb-1">SCULPTURES TEXTILES</span>
+              <h3 class="font-serif text-2xl font-light mb-1">La Haute Couture</h3>
+              <a href="#featured-products" class="inline-flex items-center text-[10px] uppercase tracking-widest text-luxury-gold font-semibold gold-link-effect">Explorer &rarr;</a>
             </div>
           </div>
-          <div class="md:col-span-5 space-y-12 md:pl-8">
-            <div class="relative h-[40vh] md:h-[50vh] overflow-hidden group hover-zoom rounded-sm shadow-xl" id="joaillerie">
+          <div class="md:col-span-5 space-y-6 md:pl-6">
+            <div class="relative h-[30vh] overflow-hidden group hover-zoom rounded-sm shadow-xl reveal-item" id="joaillerie">
               <img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1000&q=80" alt="Fine Joaillerie Detail" class="w-full h-full object-cover">
-              <div class="absolute inset-0 bg-gradient-to-t from-luxury-black via-luxury-black/10 to-transparent transition-opacity duration-700"></div>
-              <div class="absolute bottom-8 left-8 text-white z-10">
-                <span class="text-luxury-gold text-xs uppercase tracking-widest font-semibold block mb-1">SCULPTURES MINÉRALES</span>
-                <h3 class="font-serif text-2xl md:text-3xl font-light mb-2">Fine Joaillerie</h3>
-                <a href="#featured-products" class="inline-flex items-center text-[10px] uppercase tracking-widest text-luxury-gold font-semibold gold-link-effect">
-                  S'émerveiller &rarr;
-                </a>
+              <div class="absolute inset-0 bg-gradient-to-t from-luxury-black via-luxury-black/10 to-transparent"></div>
+              <div class="absolute bottom-6 left-6 text-white z-10">
+                <span class="text-luxury-gold text-[10px] uppercase tracking-widest font-semibold block mb-1">SCULPTURES MINÉRALES</span>
+                <h3 class="font-serif text-xl font-light mb-1">Fine Joaillerie</h3>
+                <a href="#featured-products" class="inline-flex items-center text-[10px] uppercase tracking-widest text-luxury-gold font-semibold gold-link-effect">S'émerveiller &rarr;</a>
               </div>
-            </div>
-            <div class="border-l-2 border-luxury-gold pl-6 py-2 space-y-3">
-              <h4 class="font-serif text-xl italic text-inherit">"Un or travaillé comme de la dentelle, un velours lourd comme de la pierre."</h4>
-              <p class="text-xs text-luxury-muted font-light leading-relaxed">
-                Nous refusons le superflu. Chaque coupe, chaque facette d'émeraude ou sertissage est le fruit d'une pure intention structurelle. Le vêtement devient l'écrin de la parure, la parure donne le rythme au vêtement.
-              </p>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Tactility Explorer (American Vintage) -->
-    <section class="py-24 md:py-36 bg-luxury-sand/30 border-b border-luxury-gold/10 theme-transition" id="fabrics">
-      <div class="max-w-7xl mx-auto px-6 md:px-12">
-        <div class="text-center max-w-3xl mx-auto mb-16 md:mb-24">
-          <span class="text-luxury-gold text-xs uppercase tracking-[0.4em] block mb-4">L'HERITAGE DES SENS</span>
-          <h2 class="font-serif text-3xl md:text-5xl font-extralight tracking-wide text-inherit">La Tactilité des Matières</h2>
-          <p class="text-sm text-luxury-muted font-light mt-4 tracking-wide leading-relaxed">
+    <!-- Slide 4: Tactility Explorer (z-40) -->
+    <section class="snap-slide z-40 theme-transition flex items-center bg-luxury-sand/30 border-b border-luxury-gold/10" id="slide-fabrics">
+      <div class="slide-overlay"></div>
+      <div class="max-w-7xl mx-auto px-6 md:px-12 w-full">
+        <div class="text-center max-w-3xl mx-auto mb-10">
+          <span class="text-luxury-gold text-xs uppercase tracking-[0.4em] block mb-2 reveal-item">L'HERITAGE DES SENS</span>
+          <h2 class="font-serif text-3xl md:text-4xl font-extralight tracking-wide text-inherit reveal-item">La Tactilité des Matières</h2>
+          <p class="text-xs text-luxury-muted font-light mt-2 tracking-wide leading-relaxed reveal-item">
             Inspiré par le soin qu'accorde **American Vintage** à la sensorialité des textures, notre Atelier privilégie des matières brutes et vibrantes. Touchez, ressentez, découvrez la provenance de nos fils et métaux précieux.
           </p>
         </div>
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          <button onclick="selectTexture('silk')" id="card-tex-silk" class="text-left group border border-luxury-gold bg-white/40 dark:bg-luxury-charcoal/20 p-4 transition-all duration-500 rounded-sm focus:outline-none cursor-pointer">
-            <div class="aspect-square w-full overflow-hidden mb-4 rounded-sm bg-luxury-sand">
-              <img src="https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?auto=format&fit=crop&w=600&q=80" alt="Drap de Soie Albâtre" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
-            </div>
-            <span class="text-[9px] uppercase tracking-widest text-luxury-gold block mb-1">I. FLUIDITÉ</span>
-            <h4 class="font-serif text-lg font-light text-inherit group-hover:text-luxury-gold transition-colors">Le Drap de Soie Albâtre</h4>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <button onclick="selectTexture('silk')" id="card-tex-silk" class="text-left group border border-luxury-gold bg-white/40 dark:bg-luxury-charcoal/20 p-3 transition-all duration-500 rounded-sm focus:outline-none cursor-pointer reveal-item">
+            <span class="text-[8px] uppercase tracking-widest text-luxury-gold block mb-1">I. FLUIDITÉ</span>
+            <h4 class="font-serif text-base font-light text-inherit group-hover:text-luxury-gold transition-colors">Le Drap de Soie Albâtre</h4>
           </button>
-          <button onclick="selectTexture('velvet')" id="card-tex-velvet" class="text-left group border border-transparent hover:border-luxury-gold/30 bg-transparent p-4 transition-all duration-500 rounded-sm focus:outline-none cursor-pointer">
-            <div class="aspect-square w-full overflow-hidden mb-4 rounded-sm bg-luxury-sand">
-              <img src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=600&q=80" alt="Velours d'Ébène" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
-            </div>
-            <span class="text-[9px] uppercase tracking-widest text-luxury-gold block mb-1">II. NOCTURNE</span>
-            <h4 class="font-serif text-lg font-light text-inherit group-hover:text-luxury-gold transition-colors">Le Velours de Lyon</h4>
+          <button onclick="selectTexture('velvet')" id="card-tex-velvet" class="text-left group border border-transparent hover:border-luxury-gold/30 bg-transparent p-3 transition-all duration-500 rounded-sm focus:outline-none cursor-pointer reveal-item">
+            <span class="text-[8px] uppercase tracking-widest text-luxury-gold block mb-1">II. NOCTURNE</span>
+            <h4 class="font-serif text-base font-light text-inherit group-hover:text-luxury-gold transition-colors">Le Velours de Lyon</h4>
           </button>
-          <button onclick="selectTexture('gold')" id="card-tex-gold" class="text-left group border border-transparent hover:border-luxury-gold/30 bg-transparent p-4 transition-all duration-500 rounded-sm focus:outline-none cursor-pointer">
-            <div class="aspect-square w-full overflow-hidden mb-4 rounded-sm bg-luxury-sand">
-              <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80" alt="Or Jaune Martelé" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
-            </div>
-            <span class="text-[9px] uppercase tracking-widest text-luxury-gold block mb-1">III. MINÉRAL</span>
-            <h4 class="font-serif text-lg font-light text-inherit group-hover:text-luxury-gold transition-colors">L'Or Jaune 24cts Martelé</h4>
+          <button onclick="selectTexture('gold')" id="card-tex-gold" class="text-left group border border-transparent hover:border-luxury-gold/30 bg-transparent p-3 transition-all duration-500 rounded-sm focus:outline-none cursor-pointer reveal-item">
+            <span class="text-[8px] uppercase tracking-widest text-luxury-gold block mb-1">III. MINÉRAL</span>
+            <h4 class="font-serif text-base font-light text-inherit group-hover:text-luxury-gold transition-colors">L'Or Jaune 24cts Martelé</h4>
           </button>
-          <button onclick="selectTexture('emerald')" id="card-tex-emerald" class="text-left group border border-transparent hover:border-luxury-gold/30 bg-transparent p-4 transition-all duration-500 rounded-sm focus:outline-none cursor-pointer">
-            <div class="aspect-square w-full overflow-hidden mb-4 rounded-sm bg-luxury-sand">
-              <img src="https://images.unsplash.com/photo-1551250936-267e74e6015a?auto=format&fit=crop&w=600&q=80" alt="Émeraude Libre" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
-            </div>
-            <span class="text-[9px] uppercase tracking-widest text-luxury-gold block mb-1">IV. VIBRATION</span>
-            <h4 class="font-serif text-lg font-light text-inherit group-hover:text-luxury-gold transition-colors">L'Émeraude de Colombie</h4>
+          <button onclick="selectTexture('emerald')" id="card-tex-emerald" class="text-left group border border-transparent hover:border-luxury-gold/30 bg-transparent p-3 transition-all duration-500 rounded-sm focus:outline-none cursor-pointer reveal-item">
+            <span class="text-[8px] uppercase tracking-widest text-luxury-gold block mb-1">IV. VIBRATION</span>
+            <h4 class="font-serif text-base font-light text-inherit group-hover:text-luxury-gold transition-colors">L'Émeraude de Colombie</h4>
           </button>
         </div>
-        <div class="border border-luxury-gold/20 bg-white/70 dark:bg-luxury-black/40 backdrop-blur-md p-8 md:p-12 rounded-sm shadow-sm grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
-          <div class="h-48 md:h-64 overflow-hidden rounded-sm bg-luxury-sand border border-luxury-gold/10">
+        <div class="border border-luxury-gold/20 bg-white/70 dark:bg-luxury-black/40 backdrop-blur-md p-6 rounded-sm shadow-sm grid grid-cols-1 md:grid-cols-3 gap-6 items-center reveal-item">
+          <div class="h-40 overflow-hidden rounded-sm bg-luxury-sand border border-luxury-gold/10">
             <img id="tex-detail-img" src="https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?auto=format&fit=crop&w=600&q=80" alt="Texture closeup" class="w-full h-full object-cover">
           </div>
-          <div class="md:col-span-2 space-y-4">
-            <div class="flex justify-between items-baseline border-b border-luxury-gold/10 pb-3">
-              <h3 class="font-serif text-2xl md:text-3xl font-light text-inherit" id="tex-detail-title">Le Drap de Soie Albâtre</h3>
-              <span class="text-[10px] tracking-widest text-luxury-gold font-medium" id="tex-detail-origin">ORIGINE : LYON, FRANCE</span>
+          <div class="md:col-span-2 space-y-2">
+            <div class="flex justify-between items-baseline border-b border-luxury-gold/10 pb-2">
+              <h3 class="font-serif text-xl font-light text-inherit" id="tex-detail-title">Le Drap de Soie Albâtre</h3>
+              <span class="text-[9px] tracking-widest text-luxury-gold font-medium" id="tex-detail-origin">ORIGINE : LYON, FRANCE</span>
             </div>
-            <p class="text-sm font-light text-luxury-muted leading-relaxed font-serif italic text-lg" id="tex-detail-desc">
+            <p class="text-sm font-light text-luxury-muted leading-relaxed font-serif italic text-base" id="tex-detail-desc">
               "Une soie lourde tissée de manière ancestrale, offrant un tombé rigide presque sculptural tout en conservant une douceur extrême et un éclat satiné discret."
             </p>
-            <div class="grid grid-cols-2 gap-4 text-[10px] text-luxury-muted uppercase tracking-wider font-semibold pt-2">
-              <div>Masse : <span class="font-sans font-normal text-inherit/80 pl-2" id="tex-detail-spec1">420 g/m²</span></div>
-              <div>Soin d'atelier : <span class="font-sans font-normal text-inherit/80 pl-2" id="tex-detail-spec2">Nettoyage Confidentiel</span></div>
-            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Atelier de Synergie (Customizer) -->
-    <section class="py-24 md:py-36 bg-luxury-black text-white relative" id="customizer">
-      <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-luxury-gold/5 blur-[150px] rounded-full pointer-events-none"></div>
-      <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-luxury-gold/5 blur-[150px] rounded-full pointer-events-none"></div>
-      <div class="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
-        <div class="text-center max-w-2xl mx-auto mb-16 md:mb-24">
-          <span class="text-luxury-gold text-xs uppercase tracking-[0.4em] block mb-4">CONFIDENCES DE L'ATELIER</span>
-          <h2 class="font-serif text-3xl md:text-5xl font-extralight tracking-wide">L'Atelier de Synergie</h2>
-          <p class="text-sm text-white/60 font-light mt-4 tracking-wide">
-            Associez nos pièces de haute couture à nos créations de joaillerie pour composer une harmonie esthétique souveraine.
-          </p>
+    <!-- Slide 5: Atelier de Synergie (z-50) -->
+    <section class="snap-slide z-50 flex items-center bg-luxury-black text-white relative" id="slide-customizer">
+      <div class="slide-overlay"></div>
+      <div class="max-w-7xl mx-auto px-6 md:px-12 relative z-10 w-full">
+        <div class="text-center max-w-2xl mx-auto mb-10">
+          <span class="text-luxury-gold text-xs uppercase tracking-[0.4em] block mb-2 reveal-item">CONFIDENCES DE L'ATELIER</span>
+          <h2 class="font-serif text-3xl md:text-4xl font-extralight tracking-wide reveal-item">L'Atelier de Synergie</h2>
         </div>
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          <div class="lg:col-span-5 space-y-10">
-            <!-- Goal-Gradient / Zeigarnik Progress bar -->
-            <div class="bg-white/5 p-4 border border-white/10 rounded-sm">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <div class="lg:col-span-5 space-y-6">
+            <!-- Goal-Gradient Progress bar -->
+            <div class="bg-white/5 p-4 border border-white/10 rounded-sm reveal-item">
               <div class="flex justify-between items-center text-[10px] uppercase tracking-widest text-luxury-muted mb-2 font-medium">
                 <span>Création de votre Silhouette</span>
-                <span id="customizer-progress-text" class="text-luxury-gold">Étape 2 / 3 : Choix de la parure</span>
+                <span id="customizer-progress-text" class="text-luxury-gold font-sans">Étape 2 / 3 : Choix de la parure</span>
               </div>
               <div class="w-full bg-white/10 h-1 rounded-full overflow-hidden">
                 <div id="customizer-progress-bar" class="bg-luxury-gold h-full transition-all duration-700 ease-in-out" style="width: 66%;"></div>
               </div>
             </div>
-            <div>
-              <span class="text-[10px] uppercase letter-spacing-wide tracking-[0.25em] text-luxury-gold font-medium block mb-4">I. LE SOUFFLE TEXTILE</span>
-              <div class="space-y-3">
-                <button onclick="selectOutfit('gown')" id="opt-gown" class="w-full flex justify-between items-center p-4 border border-luxury-gold text-left transition-all duration-500 bg-luxury-charcoal/40 backdrop-blur-sm group cursor-pointer">
+            <div class="reveal-item">
+              <span class="text-[9px] uppercase letter-spacing-wide tracking-[0.25em] text-luxury-gold font-medium block mb-2">I. LE SOUFFLE TEXTILE</span>
+              <div class="flex gap-2">
+                <button onclick="selectOutfit('gown')" id="opt-gown" class="w-1/2 flex justify-between items-center p-3 border border-luxury-gold text-left transition-all duration-500 bg-luxury-charcoal/40 backdrop-blur-sm group cursor-pointer text-xs rounded-sm">
                   <div>
-                    <h4 class="font-serif text-lg font-light text-white group-hover:text-luxury-gold transition-colors">La Robe Obscure en Soie</h4>
-                    <p class="text-[11px] text-white/50 font-light">Velours de soie & mousseline fluide</p>
+                    <h4 class="font-serif text-sm font-light text-white group-hover:text-luxury-gold transition-colors">La Robe Obscure</h4>
                   </div>
-                  <div class="text-right">
-                    <span class="font-serif text-luxury-gold text-sm block">2 400 €</span>
-                    <span class="text-[9px] uppercase tracking-widest text-luxury-muted block">Sélectionné</span>
-                  </div>
+                  <span class="font-serif text-luxury-gold font-medium">2 400 €</span>
                 </button>
-                <button onclick="selectOutfit('blazer')" id="opt-blazer" class="w-full flex justify-between items-center p-4 border border-white/10 text-left transition-all duration-500 bg-transparent group hover:border-luxury-gold/40 cursor-pointer">
+                <button onclick="selectOutfit('blazer')" id="opt-blazer" class="w-1/2 flex justify-between items-center p-3 border border-white/10 text-left transition-all duration-500 bg-transparent group hover:border-luxury-gold/40 cursor-pointer text-xs rounded-sm">
                   <div>
-                    <h4 class="font-serif text-lg font-light text-white group-hover:text-luxury-gold transition-colors">Le Blazer Albâtre</h4>
-                    <p class="text-[11px] text-white/50 font-light">Drap de soie double & boutons dorés à l'or fin</p>
+                    <h4 class="font-serif text-sm font-light text-white group-hover:text-luxury-gold transition-colors">Le Blazer Albâtre</h4>
                   </div>
-                  <div class="text-right">
-                    <span class="font-serif text-white/80 text-sm block">1 850 €</span>
-                    <span class="text-[9px] uppercase tracking-widest text-white/20 block">Choisir</span>
-                  </div>
+                  <span class="font-serif text-white/80 font-medium">1 850 €</span>
                 </button>
               </div>
             </div>
-            <div>
-              <span class="text-[10px] uppercase letter-spacing-wide tracking-[0.25em] text-luxury-gold font-medium block mb-4">II. L'ÉCLAT MINÉRAL</span>
-              <div class="space-y-3">
-                <button onclick="selectJewelry('choker')" id="opt-choker" class="w-full flex justify-between items-center p-4 border border-luxury-gold text-left transition-all duration-500 bg-luxury-charcoal/40 backdrop-blur-sm group cursor-pointer">
+            <div class="reveal-item">
+              <span class="text-[9px] uppercase letter-spacing-wide tracking-[0.25em] text-luxury-gold font-medium block mb-2">II. L'ÉCLAT MINÉRAL</span>
+              <div class="flex gap-2">
+                <button onclick="selectJewelry('choker')" id="opt-choker" class="w-1/2 flex justify-between items-center p-3 border border-luxury-gold text-left transition-all duration-500 bg-luxury-charcoal/40 backdrop-blur-sm group cursor-pointer text-xs rounded-sm">
                   <div>
-                    <h4 class="font-serif text-lg font-light text-white group-hover:text-luxury-gold transition-colors">Le Ras-de-Cou Aurélia</h4>
-                    <p class="text-[11px] text-white/50 font-light">Or jaune martelé 24 cts & chaine fine</p>
+                    <h4 class="font-serif text-sm font-light text-white group-hover:text-luxury-gold transition-colors">Le Ras-de-Cou</h4>
                   </div>
-                  <div class="text-right">
-                    <span class="font-serif text-luxury-gold text-sm block">3 200 €</span>
-                    <span class="text-[9px] uppercase tracking-widest text-luxury-muted block">Sélectionné</span>
-                  </div>
+                  <span class="font-serif text-luxury-gold font-medium">3 200 €</span>
                 </button>
-                <button onclick="selectJewelry('earrings')" id="opt-earrings" class="w-full flex justify-between items-center p-4 border border-white/10 text-left transition-all duration-500 bg-transparent group hover:border-luxury-gold/40 cursor-pointer">
+                <button onclick="selectJewelry('earrings')" id="opt-earrings" class="w-1/2 flex justify-between items-center p-3 border border-white/10 text-left transition-all duration-500 bg-transparent group hover:border-luxury-gold/40 cursor-pointer text-xs rounded-sm">
                   <div>
-                    <h4 class="font-serif text-lg font-light text-white group-hover:text-luxury-gold transition-colors">Les Cascades d'Émeraudes</h4>
-                    <p class="text-[11px] text-white/50 font-light">Émeraudes de Colombie & or éco-responsable</p>
+                    <h4 class="font-serif text-sm font-light text-white group-hover:text-luxury-gold transition-colors">Les Cascades</h4>
                   </div>
-                  <div class="text-right">
-                    <span class="font-serif text-white/80 text-sm block">4 500 €</span>
-                    <span class="text-[9px] uppercase tracking-widest text-white/20 block">Choisir</span>
-                  </div>
+                  <span class="font-serif text-white/80 font-medium">4 500 €</span>
                 </button>
               </div>
             </div>
           </div>
-          <div class="lg:col-span-4 flex justify-center">
-            <div class="border border-luxury-gold/30 p-4 bg-luxury-charcoal/20 backdrop-blur-md relative overflow-hidden group w-full max-w-sm aspect-[3/4] rounded-sm">
+          <div class="lg:col-span-4 flex justify-center reveal-item">
+            <div class="border border-luxury-gold/30 p-3 bg-luxury-charcoal/20 backdrop-blur-md relative overflow-hidden group w-full max-w-xs aspect-[3/4] rounded-sm">
               <div class="absolute inset-0 overflow-hidden w-full h-full">
                 <img id="render-outfit" src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=600&q=80" alt="Selected Outfit" class="w-full h-full object-cover transition-opacity duration-700 ease-in-out">
               </div>
-              <div class="absolute bottom-4 right-4 w-28 h-28 md:w-36 md:h-36 border border-luxury-gold/50 shadow-2xl bg-luxury-black/90 p-1 overflow-hidden group-hover:scale-105 transition-transform duration-500 rounded-sm">
-                <span class="absolute top-1 left-2 text-[7px] tracking-[0.2em] text-luxury-gold z-10 font-sans">SYNÉRGIE</span>
-                <img id="render-jewelry" src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=600&q=80" alt="Selected Jewelry Detail" class="w-full h-full object-cover grayscale brightness-90 contrast-125 hover:grayscale-0 transition-all duration-700">
+              <div class="absolute bottom-4 right-4 w-24 h-28 border border-luxury-gold/50 shadow-2xl bg-luxury-black/90 p-1 overflow-hidden group-hover:scale-105 transition-transform duration-500 rounded-sm">
+                <img id="render-jewelry" src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=600&q=80" alt="Selected Jewelry Detail" class="w-full h-full object-cover grayscale brightness-90 contrast-125">
               </div>
-              <div class="absolute inset-0 border border-white/5 m-3 pointer-events-none"></div>
             </div>
           </div>
-          <div class="lg:col-span-3 flex flex-col justify-between space-y-8 lg:h-[70vh]">
-            <div class="space-y-6">
-              <span class="text-[10px] uppercase letter-spacing-wide tracking-[0.25em] text-luxury-gold block font-medium">III. LA COMPOSITION</span>
-              <div class="border-b border-white/10 pb-6">
-                <h3 class="font-serif text-3xl font-light text-white" id="synergy-title">Harmonie Obscure</h3>
-                <p class="text-xs text-luxury-muted tracking-widest mt-2">PARURE CURÉE HAUTE DE GAMME</p>
-              </div>
-              <div class="space-y-4">
-                <p class="text-sm font-light text-white/70 italic leading-relaxed font-serif" id="synergy-description">
-                  "Un dialogue nocturne saisissant. La structure profonde et fluide du velours de soie noire sublime la matité lumineuse de l'or pur martelé à la main."
-                </p>
-                <div class="bg-luxury-charcoal/30 border-l border-luxury-gold p-3 text-xs text-white/60 font-light tracking-wide leading-relaxed">
-                  <strong class="text-luxury-gold block font-serif text-sm mb-1 font-normal">L'Atelier Note:</strong>
-                  Chaque création est confectionnée à la commande selon vos mesures exactes. Expédition confidentielle et sécurisée incluse.
-                </div>
-              </div>
+          <div class="lg:col-span-3 flex flex-col justify-between space-y-4 reveal-item">
+            <div class="border-b border-white/10 pb-4">
+              <h3 class="font-serif text-2xl font-light text-white" id="synergy-title">Harmonie Obscure</h3>
+              <p class="text-sm font-light text-white/70 italic font-serif leading-relaxed mt-2" id="synergy-description">
+                "Un dialogue nocturne..."
+              </p>
             </div>
-            <div class="pt-6 border-t border-white/10 space-y-4">
+            <div class="pt-4 space-y-2">
               <div class="flex justify-between items-baseline">
                 <span class="text-xs uppercase tracking-widest text-luxury-muted">Subtotal</span>
-                <span class="font-serif text-3xl text-luxury-gold font-light" id="synergy-price">5 600 €</span>
+                <span class="font-serif text-2xl text-luxury-gold font-light" id="synergy-price">5 600 €</span>
               </div>
-              <button onclick="addSynergyToCart()" class="w-full py-4 bg-luxury-gold text-luxury-black text-[11px] uppercase tracking-widest font-semibold hover:bg-white transition-colors duration-500 focus:outline-none cursor-pointer">
+              <button onclick="addSynergyToCart()" class="w-full py-3.5 bg-luxury-gold text-white text-[11px] uppercase tracking-widest font-semibold hover:bg-white hover:text-luxury-black transition-colors duration-500 focus:outline-none cursor-pointer rounded-sm">
                 Réserver l'Atelier
               </button>
-              <span class="text-[10px] text-white/40 block text-center font-light tracking-wider">
-                Service de conciergerie personnalisé disponible 24/7
-              </span>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Featured Products Component Grid (Pièces Maîtresses) -->
-    <section class="py-24 md:py-36 theme-transition" id="featured-products">
-      <div class="max-w-7xl mx-auto px-6 md:px-12">
-        <div class="flex flex-col md:flex-row md:items-end justify-between mb-16">
+    <!-- Slide 6: Featured Products Grid (z-60) -->
+    <section class="snap-slide z-60 theme-transition flex items-center bg-luxury-cream dark:bg-luxury-black" id="slide-products">
+      <div class="slide-overlay"></div>
+      <div class="max-w-7xl mx-auto px-6 md:px-12 w-full">
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-10">
           <div>
-            <span class="text-luxury-gold text-xs uppercase tracking-[0.3em] font-medium block mb-3">CONFECTION PRIVÉE</span>
-            <h2 class="font-serif text-3xl md:text-5xl font-light text-inherit">Les Pièces Maîtresses</h2>
+            <span class="text-luxury-gold text-xs uppercase tracking-[0.3em] font-medium block mb-2 reveal-item">CONFECTION PRIVÉE</span>
+            <h2 class="font-serif text-3xl md:text-4xl font-light text-inherit reveal-item">Les Pièces Maîtresses</h2>
           </div>
-          <p class="text-sm font-light text-luxury-muted max-w-sm mt-4 md:mt-0 leading-relaxed">
-            Chaque silhouette est coupée dans l'étoffe la plus noble, chaque parure est sculptée par l'ombre et la lumière de nos ateliers.
+          <p class="text-xs font-light text-luxury-muted max-w-sm mt-2 md:mt-0 leading-relaxed reveal-item">
+            Chaque silhouette est coupée dans l'étoffe la plus noble de nos ateliers.
           </p>
         </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
           
           <!-- Product Component Card 1 -->
-          <div class="group flex flex-col justify-between relative bg-white/10 dark:bg-luxury-charcoal/10 p-3 rounded-sm border border-luxury-gold/5">
-            <!-- Wishlist Heart Trigger -->
-            <button onclick="toggleWishlist('Le Blazer Albâtre', this)" class="absolute top-6 right-6 z-20 text-white hover:text-luxury-gold focus:outline-none cursor-pointer transition-transform duration-300 active:scale-125">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="wish-Le Blazer Albâtre"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+          <div class="group flex flex-col justify-between relative bg-white/10 dark:bg-luxury-charcoal/10 p-2.5 rounded-sm border border-luxury-gold/5 reveal-item">
+            <button onclick="toggleWishlist('Le Blazer Albâtre', this)" class="absolute top-4 right-4 z-20 text-white hover:text-luxury-gold focus:outline-none cursor-pointer transition-transform duration-300">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="wish-Le Blazer Albâtre"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
             </button>
-            
-            <div class="relative overflow-hidden bg-luxury-sand aspect-[3/4] mb-6 hover-zoom rounded-sm">
+            <div class="relative overflow-hidden bg-luxury-sand aspect-[3/4] mb-4 hover-zoom rounded-sm">
               <img src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=800&q=80" alt="Le Blazer Albâtre" class="w-full h-full object-cover">
-              <span class="absolute top-4 left-4 bg-luxury-black/60 backdrop-blur-sm text-luxury-gold text-[8px] uppercase tracking-widest px-2 py-0.5 rounded-xs font-semibold z-10 border border-luxury-gold/20">Édition Limitée</span>
-              
-              <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-luxury-black/80 to-transparent p-6 translate-y-full group-hover:translate-y-0 transition-transform duration-500 flex flex-col gap-2">
-                <button onclick="openQuickView('blazer')" class="w-full py-2.5 bg-white text-luxury-black text-[10px] uppercase tracking-widest font-medium hover:bg-luxury-gold transition-colors duration-300 rounded-sm cursor-pointer">
-                  Aperçu Atelier
-                </button>
-                <button onclick="addToCart('Le Blazer Albâtre', 1850, 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=800&q=80')" class="w-full py-2.5 bg-transparent border border-white/40 text-white text-[10px] uppercase tracking-widest font-medium hover:border-white transition-colors duration-300 rounded-sm cursor-pointer">
-                  Ajouter au Sac
-                </button>
+              <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-luxury-black/80 to-transparent p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-500 flex flex-col gap-1.5">
+                <button onclick="openQuickView('blazer')" class="w-full py-2 bg-white text-luxury-black text-[9px] uppercase tracking-widest font-medium hover:bg-luxury-gold hover:text-white transition-colors duration-300 rounded-sm cursor-pointer">Aperçu</button>
+                <button onclick="addToCart('Le Blazer Albâtre', 1850, 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=800&q=80')" class="w-full py-2 bg-transparent border border-white/40 text-white text-[9px] uppercase tracking-widest font-medium hover:border-white transition-colors duration-300 rounded-sm cursor-pointer">Ajouter</button>
               </div>
             </div>
-            <div class="flex justify-between items-start">
+            <div class="flex justify-between items-start text-xs">
               <div>
-                <h3 class="font-serif text-lg font-light text-inherit group-hover:text-luxury-gold transition-colors"><a href="#customizer">Le Blazer Albâtre</a></h3>
-                <p class="text-xs text-luxury-muted mt-1 font-light">Couture pure drap de soie</p>
-                <!-- Stock Scarcity Feeling -->
-                <span class="text-[9px] uppercase font-semibold text-amber-600 dark:text-luxury-gold tracking-widest block mt-1.5">&#9679; Seulement 2 exemplaires restants</span>
+                <h3 class="font-serif font-light text-inherit"><a href="#customizer">Le Blazer Albâtre</a></h3>
+                <span class="text-[9px] uppercase font-semibold text-amber-600 dark:text-luxury-gold tracking-widest block mt-1">&#9679; 2 restants</span>
               </div>
               <span class="font-serif text-inherit/90 font-medium">1 850 €</span>
             </div>
           </div>
 
           <!-- Product Component Card 2 -->
-          <div class="group flex flex-col justify-between relative bg-white/10 dark:bg-luxury-charcoal/10 p-3 rounded-sm border border-luxury-gold/5">
-            <button onclick="toggleWishlist('Le Ras-de-Cou Aurélia', this)" class="absolute top-6 right-6 z-20 text-white hover:text-luxury-gold focus:outline-none cursor-pointer transition-transform duration-300 active:scale-125">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="wish-Le Ras-de-Cou Aurélia"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+          <div class="group flex flex-col justify-between relative bg-white/10 dark:bg-luxury-charcoal/10 p-2.5 rounded-sm border border-luxury-gold/5 reveal-item">
+            <button onclick="toggleWishlist('Le Ras-de-Cou Aurélia', this)" class="absolute top-4 right-4 z-20 text-white hover:text-luxury-gold focus:outline-none cursor-pointer transition-transform duration-300">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="wish-Le Ras-de-Cou Aurélia"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
             </button>
-            <div class="relative overflow-hidden bg-luxury-sand aspect-[3/4] mb-6 hover-zoom rounded-sm">
+            <div class="relative overflow-hidden bg-luxury-sand aspect-[3/4] mb-4 hover-zoom rounded-sm">
               <img src="https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=800&q=80" alt="Le Ras-de-Cou Aurélia" class="w-full h-full object-cover">
-              <span class="absolute top-4 left-4 bg-luxury-black/60 backdrop-blur-sm text-luxury-gold text-[8px] uppercase tracking-widest px-2 py-0.5 rounded-xs font-semibold z-10 border border-luxury-gold/20">Pièce Unique d'Orfèvre</span>
-              
-              <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-luxury-black/80 to-transparent p-6 translate-y-full group-hover:translate-y-0 transition-transform duration-500 flex flex-col gap-2">
-                <button onclick="openQuickView('choker')" class="w-full py-2.5 bg-white text-luxury-black text-[10px] uppercase tracking-widest font-medium hover:bg-luxury-gold transition-colors duration-300 rounded-sm cursor-pointer">
-                  Aperçu Atelier
-                </button>
-                <button onclick="addToCart('Le Ras-de-Cou Aurélia', 3200, 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=800&q=80')" class="w-full py-2.5 bg-transparent border border-white/40 text-white text-[10px] uppercase tracking-widest font-medium hover:border-white transition-colors duration-300 rounded-sm cursor-pointer">
-                  Ajouter au Sac
-                </button>
+              <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-luxury-black/80 to-transparent p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-500 flex flex-col gap-1.5">
+                <button onclick="openQuickView('choker')" class="w-full py-2 bg-white text-luxury-black text-[9px] uppercase tracking-widest font-medium hover:bg-luxury-gold hover:text-white transition-colors duration-300 rounded-sm cursor-pointer">Aperçu</button>
+                <button onclick="addToCart('Le Ras-de-Cou Aurélia', 3200, 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=800&q=80')" class="w-full py-2 bg-transparent border border-white/40 text-white text-[9px] uppercase tracking-widest font-medium hover:border-white transition-colors duration-300 rounded-sm cursor-pointer">Ajouter</button>
               </div>
             </div>
-            <div class="flex justify-between items-start">
+            <div class="flex justify-between items-start text-xs">
               <div>
-                <h3 class="font-serif text-lg font-light text-inherit group-hover:text-luxury-gold transition-colors"><a href="#customizer">Le Ras-de-Cou Aurélia</a></h3>
-                <p class="text-xs text-luxury-muted mt-1 font-light">Or jaune martelé d'exception</p>
-                <span class="text-[9px] uppercase font-semibold text-emerald-600 dark:text-emerald-400 tracking-widest block mt-1.5">&#9679; Confection sur-mesure</span>
+                <h3 class="font-serif font-light text-inherit"><a href="#customizer">Le Ras-de-Cou Aurélia</a></h3>
+                <span class="text-[9px] uppercase font-semibold text-emerald-600 dark:text-emerald-400 tracking-widest block mt-1">&#9679; Unique</span>
               </div>
               <span class="font-serif text-inherit/90 font-medium">3 200 €</span>
             </div>
           </div>
 
           <!-- Product Component Card 3 -->
-          <div class="group flex flex-col justify-between relative bg-white/10 dark:bg-luxury-charcoal/10 p-3 rounded-sm border border-luxury-gold/5">
-            <button onclick="toggleWishlist('Les Cascades d\'Émeraudes', this)" class="absolute top-6 right-6 z-20 text-white hover:text-luxury-gold focus:outline-none cursor-pointer transition-transform duration-300 active:scale-125">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="wish-Les Cascades d'Émeraudes"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+          <div class="group flex flex-col justify-between relative bg-white/10 dark:bg-luxury-charcoal/10 p-2.5 rounded-sm border border-luxury-gold/5 reveal-item">
+            <button onclick="toggleWishlist('Les Cascades d\'Émeraudes', this)" class="absolute top-4 right-4 z-20 text-white hover:text-luxury-gold focus:outline-none cursor-pointer transition-transform duration-300">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="wish-Les Cascades d'Émeraudes"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
             </button>
-            <div class="relative overflow-hidden bg-luxury-sand aspect-[3/4] mb-6 hover-zoom rounded-sm">
+            <div class="relative overflow-hidden bg-luxury-sand aspect-[3/4] mb-4 hover-zoom rounded-sm">
               <img src="https://images.unsplash.com/photo-1635767798638-3e25273a8236?auto=format&fit=crop&w=800&q=80" alt="Cascades d'Émeraudes" class="w-full h-full object-cover">
-              <span class="absolute top-4 left-4 bg-luxury-black/60 backdrop-blur-sm text-luxury-gold text-[8px] uppercase tracking-widest px-2 py-0.5 rounded-xs font-semibold z-10 border border-luxury-gold/20">Haute Joaillerie</span>
-              
-              <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-luxury-black/80 to-transparent p-6 translate-y-full group-hover:translate-y-0 transition-transform duration-500 flex flex-col gap-2">
-                <button onclick="openQuickView('earrings')" class="w-full py-2.5 bg-white text-luxury-black text-[10px] uppercase tracking-widest font-medium hover:bg-luxury-gold transition-colors duration-300 rounded-sm cursor-pointer">
-                  Aperçu Atelier
-                </button>
-                <button onclick="addToCart('Les Cascades d\'Émeraudes', 4500, 'https://images.unsplash.com/photo-1635767798638-3e25273a8236?auto=format&fit=crop&w=800&q=80')" class="w-full py-2.5 bg-transparent border border-white/40 text-white text-[10px] uppercase tracking-widest font-medium hover:border-white transition-colors duration-300 rounded-sm cursor-pointer">
-                  Ajouter au Sac
-                </button>
+              <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-luxury-black/80 to-transparent p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-500 flex flex-col gap-1.5">
+                <button onclick="openQuickView('earrings')" class="w-full py-2 bg-white text-luxury-black text-[9px] uppercase tracking-widest font-medium hover:bg-luxury-gold hover:text-white transition-colors duration-300 rounded-sm cursor-pointer">Aperçu</button>
+                <button onclick="addToCart('Les Cascades d\'Émeraudes', 4500, 'https://images.unsplash.com/photo-1635767798638-3e25273a8236?auto=format&fit=crop&w=800&q=80')" class="w-full py-2 bg-transparent border border-white/40 text-white text-[9px] uppercase tracking-widest font-medium hover:border-white transition-colors duration-300 rounded-sm cursor-pointer">Ajouter</button>
               </div>
             </div>
-            <div class="flex justify-between items-start">
+            <div class="flex justify-between items-start text-xs">
               <div>
-                <h3 class="font-serif text-lg font-light text-inherit group-hover:text-luxury-gold transition-colors"><a href="#customizer">Les Cascades d'Émeraudes</a></h3>
-                <p class="text-xs text-luxury-muted mt-1 font-light">Émeraudes & or d'Atelier</p>
-                <span class="text-[9px] uppercase font-semibold text-amber-600 dark:text-luxury-gold tracking-widest block mt-1.5">&#9679; Dernière parure disponible</span>
+                <h3 class="font-serif font-light text-inherit"><a href="#customizer">Les Cascades</a></h3>
+                <span class="text-[9px] uppercase font-semibold text-amber-600 dark:text-luxury-gold tracking-widest block mt-1">&#9679; Dernière</span>
               </div>
               <span class="font-serif text-inherit/90 font-medium">4 500 €</span>
             </div>
           </div>
 
           <!-- Product Component Card 4 -->
-          <div class="group flex flex-col justify-between relative bg-white/10 dark:bg-luxury-charcoal/10 p-3 rounded-sm border border-luxury-gold/5">
-            <button onclick="toggleWishlist('La Robe Obscure en Soie', this)" class="absolute top-6 right-6 z-20 text-white hover:text-luxury-gold focus:outline-none cursor-pointer transition-transform duration-300 active:scale-125">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="wish-La Robe Obscure en Soie"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+          <div class="group flex flex-col justify-between relative bg-white/10 dark:bg-luxury-charcoal/10 p-2.5 rounded-sm border border-luxury-gold/5 reveal-item">
+            <button onclick="toggleWishlist('La Robe Obscure en Soie', this)" class="absolute top-4 right-4 z-20 text-white hover:text-luxury-gold focus:outline-none cursor-pointer transition-transform duration-300">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="wish-La Robe Obscure en Soie"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
             </button>
-            <div class="relative overflow-hidden bg-luxury-sand aspect-[3/4] mb-6 hover-zoom rounded-sm">
+            <div class="relative overflow-hidden bg-luxury-sand aspect-[3/4] mb-4 hover-zoom rounded-sm">
               <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=800&q=80" alt="La Robe Obscure" class="w-full h-full object-cover">
-              <span class="absolute top-4 left-4 bg-luxury-black/60 backdrop-blur-sm text-luxury-gold text-[8px] uppercase tracking-widest px-2 py-0.5 rounded-xs font-semibold z-10 border border-luxury-gold/20">Exclusivité en Ligne</span>
-              
-              <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-luxury-black/80 to-transparent p-6 translate-y-full group-hover:translate-y-0 transition-transform duration-500 flex flex-col gap-2">
-                <button onclick="openQuickView('gown')" class="w-full py-2.5 bg-white text-luxury-black text-[10px] uppercase tracking-widest font-medium hover:bg-luxury-gold transition-colors duration-300 rounded-sm cursor-pointer">
-                  Aperçu Atelier
-                </button>
-                <button onclick="addToCart('La Robe Obscure en Soie', 2400, 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=800&q=80')" class="w-full py-2.5 bg-transparent border border-white/40 text-white text-[10px] uppercase tracking-widest font-medium hover:border-white transition-colors duration-300 rounded-sm cursor-pointer">
-                  Ajouter au Sac
-                </button>
+              <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-luxury-black/80 to-transparent p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-500 flex flex-col gap-1.5">
+                <button onclick="openQuickView('gown')" class="w-full py-2 bg-white text-luxury-black text-[9px] uppercase tracking-widest font-medium hover:bg-luxury-gold hover:text-white transition-colors duration-300 rounded-sm cursor-pointer">Aperçu</button>
+                <button onclick="addToCart('La Robe Obscure en Soie', 2400, 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=800&q=80')" class="w-full py-2 bg-transparent border border-white/40 text-white text-[9px] uppercase tracking-widest font-medium hover:border-white transition-colors duration-300 rounded-sm cursor-pointer">Ajouter</button>
               </div>
             </div>
-            <div class="flex justify-between items-start">
+            <div class="flex justify-between items-start text-xs">
               <div>
-                <h3 class="font-serif text-lg font-light text-inherit group-hover:text-luxury-gold transition-colors"><a href="#customizer">La Robe Obscure</a></h3>
-                <p class="text-xs text-luxury-muted mt-1 font-light">Velours noble de Lyon</p>
-                <span class="text-[9px] uppercase font-semibold text-emerald-600 dark:text-emerald-400 tracking-widest block mt-1.5">&#9679; Confection sur-mesure</span>
+                <h3 class="font-serif font-light text-inherit"><a href="#customizer">La Robe Obscure</a></h3>
+                <span class="text-[9px] uppercase font-semibold text-emerald-600 dark:text-emerald-400 tracking-widest block mt-1">&#9679; Sur-mesure</span>
               </div>
               <span class="font-serif text-inherit/90 font-medium">2 400 €</span>
             </div>
@@ -642,90 +595,81 @@
       </div>
     </section>
 
-    <!-- Shoppable Community Lookbook -->
-    <section class="py-24 md:py-36 border-t border-b border-luxury-gold/10 theme-transition" id="shoppable">
-      <div class="max-w-7xl mx-auto px-6 md:px-12">
-        <div class="text-center max-w-2xl mx-auto mb-16">
-          <span class="text-luxury-gold text-xs uppercase tracking-[0.4em] block mb-3">L'ALLURE EN MOUVEMENT</span>
-          <h2 class="font-serif text-3xl md:text-5xl font-extralight tracking-wide text-inherit">Le Cercle AURA</h2>
-          <p class="text-sm text-luxury-muted font-light mt-4 leading-relaxed">
+    <!-- Slide 7: Shoppable Community Lookbook (z-70) -->
+    <section class="snap-slide z-70 theme-transition flex items-center bg-luxury-cream dark:bg-luxury-black border-t border-b border-luxury-gold/10" id="shoppable">
+      <div class="slide-overlay"></div>
+      <div class="max-w-7xl mx-auto px-6 md:px-12 w-full">
+        <div class="text-center max-w-2xl mx-auto mb-10">
+          <span class="text-luxury-gold text-xs uppercase tracking-[0.4em] block mb-2 reveal-item">L'ALLURE EN MOUVEMENT</span>
+          <h2 class="font-serif text-3xl md:text-4xl font-extralight tracking-wide text-inherit reveal-item">Le Cercle AURA</h2>
+          <p class="text-xs text-luxury-muted font-light mt-2 leading-relaxed reveal-item">
             Découvrez comment nos ambassadeurs associent nos silhouettes à travers le monde. Survolez ou touchez les pastilles <span class="text-luxury-gold font-semibold">+</span> pour acheter instantanément les pièces portées.
           </p>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           
-          <div class="relative overflow-hidden rounded-sm shadow-xl aspect-[3/4] group">
+          <div class="relative overflow-hidden rounded-sm shadow-xl aspect-[3/4] group reveal-item">
             <img src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=800&q=80" alt="Alabaster look" class="w-full h-full object-cover">
             <div class="absolute inset-0 bg-black/10 transition-opacity duration-300 group-hover:bg-black/25"></div>
             <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
-              <button onclick="toggleHotspot('hotspot-pop-1')" class="w-10 h-10 rounded-full bg-luxury-gold text-luxury-black font-semibold hotspot-pulse focus:outline-none flex items-center justify-center cursor-pointer border border-white">
+              <button onclick="toggleHotspot('hotspot-pop-1')" class="w-10 h-10 rounded-full bg-luxury-gold text-white font-semibold hotspot-pulse focus:outline-none flex items-center justify-center cursor-pointer border border-white">
                 +
               </button>
-              <div id="hotspot-pop-1" class="absolute left-12 top-0 w-48 bg-white text-luxury-black p-4 shadow-2xl rounded-sm opacity-0 pointer-events-none transition-all duration-300 translate-y-2 border border-luxury-gold/20">
+              <div id="hotspot-pop-1" class="absolute left-12 top-0 w-44 bg-white text-luxury-black p-3 shadow-2xl rounded-sm opacity-0 pointer-events-none transition-all duration-300 translate-y-2 border border-luxury-gold/20">
                 <span class="text-[8px] uppercase tracking-widest text-luxury-muted block">HAUTE COUTURE</span>
-                <h5 class="font-serif text-sm font-semibold mt-1">Le Blazer Albâtre</h5>
+                <h5 class="font-serif text-xs font-semibold mt-1">Le Blazer Albâtre</h5>
                 <span class="font-serif text-xs text-luxury-gold block mt-1">1 850 €</span>
-                <button onclick="addToCart('Le Blazer Albâtre', 1850, 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=800&q=80'); openCart();" class="w-full mt-3 py-1.5 bg-luxury-black text-white text-[9px] uppercase tracking-widest font-semibold hover:bg-luxury-gold hover:text-luxury-black transition-colors rounded-xs">
-                  Acheter
-                </button>
+                <button onclick="addToCart('Le Blazer Albâtre', 1850, 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=800&q=80'); openCart();" class="w-full mt-2.5 py-1.5 bg-luxury-black text-white text-[9px] uppercase tracking-widest font-semibold hover:bg-luxury-gold hover:text-white transition-colors rounded-xs">Acheter</button>
               </div>
             </div>
-            <span class="absolute bottom-4 left-4 text-[9px] tracking-widest uppercase text-white/80 bg-black/40 px-2 py-1 backdrop-blur-sm rounded-xs">@esrid_style</span>
           </div>
 
-          <div class="relative overflow-hidden rounded-sm shadow-xl aspect-[3/4] group">
+          <div class="relative overflow-hidden rounded-sm shadow-xl aspect-[3/4] group reveal-item">
             <img src="https://images.unsplash.com/photo-1509319117193-57bab727e09d?auto=format&fit=crop&w=800&q=80" alt="Gold necklace look" class="w-full h-full object-cover">
             <div class="absolute inset-0 bg-black/10 transition-opacity duration-300 group-hover:bg-black/25"></div>
             <div class="absolute top-[40%] left-1/2 -translate-x-1/2 z-10">
-              <button onclick="toggleHotspot('hotspot-pop-2')" class="w-10 h-10 rounded-full bg-luxury-gold text-luxury-black font-semibold hotspot-pulse focus:outline-none flex items-center justify-center cursor-pointer border border-white">
+              <button onclick="toggleHotspot('hotspot-pop-2')" class="w-10 h-10 rounded-full bg-luxury-gold text-white font-semibold hotspot-pulse focus:outline-none flex items-center justify-center cursor-pointer border border-white">
                 +
               </button>
-              <div id="hotspot-pop-2" class="absolute left-12 top-0 w-48 bg-white text-luxury-black p-4 shadow-2xl rounded-sm opacity-0 pointer-events-none transition-all duration-300 translate-y-2 border border-luxury-gold/20">
+              <div id="hotspot-pop-2" class="absolute left-12 top-0 w-44 bg-white text-luxury-black p-3 shadow-2xl rounded-sm opacity-0 pointer-events-none transition-all duration-300 translate-y-2 border border-luxury-gold/20">
                 <span class="text-[8px] uppercase tracking-widest text-luxury-muted block">JOAILLERIE</span>
-                <h5 class="font-serif text-sm font-semibold mt-1">Le Ras-de-Cou Aurélia</h5>
+                <h5 class="font-serif text-xs font-semibold mt-1">Le Ras-de-Cou Aurélia</h5>
                 <span class="font-serif text-xs text-luxury-gold block mt-1">3 200 €</span>
-                <button onclick="addToCart('Le Ras-de-Cou Aurélia', 3200, 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=800&q=80'); openCart();" class="w-full mt-3 py-1.5 bg-luxury-black text-white text-[9px] uppercase tracking-widest font-semibold hover:bg-luxury-gold hover:text-luxury-black transition-colors rounded-xs">
-                  Acheter
-                </button>
+                <button onclick="addToCart('Le Ras-de-Cou Aurélia', 3200, 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=800&q=80'); openCart();" class="w-full mt-2.5 py-1.5 bg-luxury-black text-white text-[9px] uppercase tracking-widest font-semibold hover:bg-luxury-gold hover:text-white transition-colors rounded-xs">Acheter</button>
               </div>
             </div>
-            <span class="absolute bottom-4 left-4 text-[9px] tracking-widest uppercase text-white/80 bg-black/40 px-2 py-1 backdrop-blur-sm rounded-xs">@aura_monaco</span>
           </div>
 
-          <div class="relative overflow-hidden rounded-sm shadow-xl aspect-[3/4] group">
+          <div class="relative overflow-hidden rounded-sm shadow-xl aspect-[3/4] group reveal-item">
             <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=800&q=80" alt="Gown look" class="w-full h-full object-cover">
             <div class="absolute inset-0 bg-black/10 transition-opacity duration-300 group-hover:bg-black/25"></div>
             <div class="absolute top-[60%] left-[45%] z-10">
-              <button onclick="toggleHotspot('hotspot-pop-3')" class="w-10 h-10 rounded-full bg-luxury-gold text-luxury-black font-semibold hotspot-pulse focus:outline-none flex items-center justify-center cursor-pointer border border-white">
+              <button onclick="toggleHotspot('hotspot-pop-3')" class="w-10 h-10 rounded-full bg-luxury-gold text-white font-semibold hotspot-pulse focus:outline-none flex items-center justify-center cursor-pointer border border-white">
                 +
               </button>
-              <div id="hotspot-pop-3" class="absolute left-12 top-0 w-48 bg-white text-luxury-black p-4 shadow-2xl rounded-sm opacity-0 pointer-events-none transition-all duration-300 translate-y-2 border border-luxury-gold/20">
+              <div id="hotspot-pop-3" class="absolute left-12 top-0 w-44 bg-white text-luxury-black p-3 shadow-2xl rounded-sm opacity-0 pointer-events-none transition-all duration-300 translate-y-2 border border-luxury-gold/20">
                 <span class="text-[8px] uppercase tracking-widest text-luxury-muted block">HAUTE COUTURE</span>
-                <h5 class="font-serif text-sm font-semibold mt-1">La Robe Obscure</h5>
+                <h5 class="font-serif text-xs font-semibold mt-1">La Robe Obscure</h5>
                 <span class="font-serif text-xs text-luxury-gold block mt-1">2 400 €</span>
-                <button onclick="addToCart('La Robe Obscure en Soie', 2400, 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=800&q=80'); openCart();" class="w-full mt-3 py-1.5 bg-luxury-black text-white text-[9px] uppercase tracking-widest font-semibold hover:bg-luxury-gold hover:text-luxury-black transition-colors rounded-xs">
-                  Acheter
-                </button>
+                <button onclick="addToCart('La Robe Obscure en Soie', 2400, 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=800&q=80'); openCart();" class="w-full mt-2.5 py-1.5 bg-luxury-black text-white text-[9px] uppercase tracking-widest font-semibold hover:bg-luxury-gold hover:text-white transition-colors rounded-xs">Acheter</button>
               </div>
             </div>
-            <span class="absolute bottom-4 left-4 text-[9px] tracking-widest uppercase text-white/80 bg-black/40 px-2 py-1 backdrop-blur-sm rounded-xs">@parisian_atelier</span>
           </div>
 
         </div>
       </div>
     </section>
 
-    <!-- Editorial Quote -->
-    <section class="py-24 bg-luxury-charcoal text-white relative overflow-hidden">
-      <div class="absolute inset-y-0 right-1/4 w-[1px] bg-white/5"></div>
-      <div class="absolute inset-x-0 top-1/2 h-[1px] bg-white/5"></div>
-      <div class="max-w-7xl mx-auto px-6 md:px-12 relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-12 items-center">
+    <!-- Slide 8: Editorial Quote & Journal (z-80) -->
+    <section class="snap-slide z-80 flex items-center bg-luxury-charcoal text-white relative overflow-hidden" id="slide-journal">
+      <div class="slide-overlay"></div>
+      <div class="max-w-7xl mx-auto px-6 md:px-12 relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-12 items-center w-full">
         <div class="lg:col-span-2 space-y-6 border-b lg:border-b-0 lg:border-r border-white/10 pb-12 lg:pb-0 lg:pr-12">
-          <span class="text-luxury-gold text-xs uppercase tracking-[0.4em] font-medium block">LE JOURNAL D'AURA</span>
-          <blockquote class="font-serif text-3xl md:text-4xl lg:text-5xl font-extralight italic leading-tight text-white/90">
+          <span class="text-luxury-gold text-xs uppercase tracking-[0.4em] font-medium block reveal-item">LE JOURNAL D'AURA</span>
+          <blockquote class="font-serif text-2xl md:text-3xl lg:text-4xl font-extralight italic leading-tight text-white/90 reveal-item">
             "Un minimalisme opulent d'une rare élégance, où le fil s'unit à la pierre de façon si intime qu'on ne distingue plus la couture du métal."
           </blockquote>
-          <div class="flex items-center space-x-4 pt-4">
+          <div class="flex items-center space-x-4 pt-4 reveal-item">
             <div class="w-10 h-10 rounded-full border border-luxury-gold/50 overflow-hidden bg-luxury-sand">
               <img src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=100&q=80" alt="Reviewer" class="w-full h-full object-cover">
             </div>
@@ -735,34 +679,42 @@
             </div>
           </div>
         </div>
-        <div class="space-y-6 flex flex-col justify-center">
+        <div class="space-y-4 flex flex-col justify-center reveal-item">
           <h4 class="font-serif text-2xl font-light text-luxury-gold tracking-wide">Prendre Rendez-vous en Salon</h4>
-          <p class="text-xs md:text-sm text-white/60 font-light leading-relaxed tracking-wide">
+          <p class="text-xs text-white/60 font-light leading-relaxed tracking-wide">
             Nos artisans vous reçoivent en toute intimité dans nos salons de Paris, Genève et Cannes pour élaborer vos créations sur-mesure et vos alliances de joaillerie exclusives.
           </p>
           <div>
-            <button onclick="alert('Conciergerie AURA: Nos salons artistiques vous contacteront très prochainement par e-mail.')" class="px-6 py-3 border border-luxury-gold text-luxury-gold text-[10px] uppercase tracking-widest font-medium hover:bg-luxury-gold hover:text-luxury-black transition-all duration-300 cursor-pointer">
-              Prendre Rendez-vous
-            </button>
+            <button onclick="alert('Conciergerie AURA: Nos salons artistiques vous contacteront très prochainement par e-mail.')" class="px-6 py-3 border border-luxury-gold text-luxury-gold text-[10px] uppercase tracking-widest font-medium hover:bg-luxury-gold hover:text-white transition-all duration-300 cursor-pointer">Prendre Rendez-vous</button>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Newsletter -->
-    <section class="py-24 md:py-32 theme-transition text-center relative" id="newsletter">
-      <div class="max-w-xl mx-auto px-6">
-        <span class="text-luxury-gold text-[10px] uppercase tracking-[0.3em] font-medium block mb-4">CONFIDENTIALITÉ</span>
-        <h2 class="font-serif text-3xl md:text-4xl font-light mb-4 text-inherit">Rejoindre le Cercle AURA</h2>
-        <p class="text-xs md:text-sm text-luxury-muted font-light tracking-wide leading-relaxed mb-8">
-          Soyez les premiers informés des esquisses de nos collections éphémères, des ventes privées de l'Atelier et de nos parures de joaillerie uniques.
+    <!-- Slide 9: Newsletter & Footer (z-90) -->
+    <section class="snap-slide z-90 flex flex-col justify-between bg-luxury-cream dark:bg-luxury-black text-inherit pt-24 pb-8" id="slide-footer">
+      <div class="slide-overlay"></div>
+      
+      <!-- Newsletter Row -->
+      <div class="max-w-xl mx-auto px-6 text-center w-full my-auto">
+        <span class="text-luxury-gold text-[10px] uppercase tracking-[0.3em] font-medium block mb-2 reveal-item">CONFIDENTIALITÉ</span>
+        <h2 class="font-serif text-2xl md:text-3xl font-light mb-2 text-inherit reveal-item">Rejoindre le Cercle AURA</h2>
+        <p class="text-xs text-luxury-muted font-light tracking-wide leading-relaxed mb-6 reveal-item">
+          Soyez les premiers informés des esquisses de nos collections éphémères de l'Atelier.
         </p>
-        <form onsubmit="event.preventDefault(); alert('Bienvenue au sein du Cercle AURA. Une invitation de bienvenue vous a été adressée.')" class="flex flex-col sm:flex-row gap-3 border-b border-current/20 pb-2 focus-within:border-luxury-gold transition-colors duration-300">
-          <input type="email" placeholder="Saisir votre adresse confidentielle..." required class="flex-grow bg-transparent text-sm font-light text-inherit placeholder-luxury-muted focus:outline-none py-3 text-center sm:text-left">
-          <button type="submit" class="text-[10px] uppercase letter-spacing-wide tracking-widest font-semibold text-luxury-gold hover:text-current transition-colors py-3 px-4 cursor-pointer">
-            S'inscrire
-          </button>
+        <form onsubmit="event.preventDefault(); alert('Bienvenue au sein du Cercle AURA.')" class="flex flex-col sm:flex-row gap-3 border-b border-current/20 pb-2 focus-within:border-luxury-gold transition-colors duration-300 reveal-item">
+          <input type="email" placeholder="Saisir votre adresse confidentielle..." required class="flex-grow bg-transparent text-xs font-light text-inherit placeholder-luxury-muted focus:outline-none py-2 text-center sm:text-left">
+          <button type="submit" class="text-[10px] uppercase tracking-widest font-semibold text-luxury-gold hover:text-current transition-colors py-2 px-4 cursor-pointer">S'inscrire</button>
         </form>
+      </div>
+
+      <!-- Fine Print Footer -->
+      <div class="max-w-7xl mx-auto px-6 md:px-12 w-full pt-8 border-t border-current/5 flex flex-col md:flex-row justify-between items-center text-[9px] text-luxury-muted tracking-wider space-y-4 md:space-y-0">
+        <div>&copy; 2026 AURA ATELIER. TOUS DROITS RÉSERVÉS.</div>
+        <div class="flex space-x-6">
+          <a href="#" class="hover:text-luxury-gold transition-colors">Mentions Légales</a>
+          <a href="#" class="hover:text-luxury-gold transition-colors">Confidentialité</a>
+        </div>
       </div>
     </section>
 
@@ -773,7 +725,6 @@
   <main id="view-checkout" class="view-hidden pt-28 pb-24 theme-transition">
     <div class="max-w-6xl mx-auto px-6 md:px-12">
       
-      <!-- Checkout Back Trigger / Goal-Gradient Context -->
       <div class="flex justify-between items-center border-b border-luxury-gold/20 pb-6 mb-12">
         <button onclick="showView('store')" class="inline-flex items-center text-xs uppercase tracking-widest text-luxury-gold hover:text-luxury-black dark:hover:text-white transition-colors cursor-pointer">
           <span class="mr-2 font-serif text-lg">&larr;</span> Retour aux Pièces
@@ -788,8 +739,6 @@
         
         <!-- Left Side: Shipping & Secure Payment (7 Cols) -->
         <div class="lg:col-span-7 space-y-12">
-          
-          <!-- Component A: Client Shipping Information -->
           <div class="bg-white/40 dark:bg-luxury-charcoal/20 border border-luxury-gold/10 p-6 md:p-8 rounded-sm">
             <span class="text-[9px] uppercase tracking-[0.25em] text-luxury-gold font-medium block mb-4">I. COORDONNÉES DE LIVRAISON</span>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -802,7 +751,7 @@
                 <input type="text" id="chk-last-name" required placeholder="Dupont" class="w-full bg-white/60 dark:bg-luxury-black/30 border border-luxury-gold/15 text-sm p-3 focus:outline-none focus:border-luxury-gold text-inherit rounded-xs font-light">
               </div>
               <div class="sm:col-span-2">
-                <label class="text-[9px] uppercase tracking-widest text-luxury-muted font-semibold block mb-1">Adresse Confidentielle de Livraison</label>
+                <label class="text-[9px] uppercase tracking-widest text-luxury-muted font-semibold block mb-1">Adresse Confidentielle</label>
                 <input type="text" id="chk-address" required placeholder="8 Place Vendôme" class="w-full bg-white/60 dark:bg-luxury-black/30 border border-luxury-gold/15 text-sm p-3 focus:outline-none focus:border-luxury-gold text-inherit rounded-xs font-light">
               </div>
               <div>
@@ -814,35 +763,33 @@
                 <input type="text" id="chk-zip" required placeholder="75001" class="w-full bg-white/60 dark:bg-luxury-black/30 border border-luxury-gold/15 text-sm p-3 focus:outline-none focus:border-luxury-gold text-inherit rounded-xs font-light">
               </div>
               <div>
-                <label class="text-[9px] uppercase tracking-widest text-luxury-muted font-semibold block mb-1">Téléphone Sécurisé</label>
+                <label class="text-[9px] uppercase tracking-widest text-luxury-muted font-semibold block mb-1">Téléphone</label>
                 <input type="tel" id="chk-phone" required placeholder="+33 (0) 6..." class="w-full bg-white/60 dark:bg-luxury-black/30 border border-luxury-gold/15 text-sm p-3 focus:outline-none focus:border-luxury-gold text-inherit rounded-xs font-light">
               </div>
               <div>
-                <label class="text-[9px] uppercase tracking-widest text-luxury-muted font-semibold block mb-1">Courriel de Contact</label>
+                <label class="text-[9px] uppercase tracking-widest text-luxury-muted font-semibold block mb-1">Courriel</label>
                 <input type="email" id="chk-email" required placeholder="jean.dupont@client-luxe.com" class="w-full bg-white/60 dark:bg-luxury-black/30 border border-luxury-gold/15 text-sm p-3 focus:outline-none focus:border-luxury-gold text-inherit rounded-xs font-light">
               </div>
             </div>
           </div>
 
-          <!-- Component B: Secure Luxury Payment Form (Postel's Law input parsing) -->
+          <!-- Secure Payment -->
           <div class="bg-white/40 dark:bg-luxury-charcoal/20 border border-luxury-gold/10 p-6 md:p-8 rounded-sm">
             <div class="flex justify-between items-center mb-4">
               <span class="text-[9px] uppercase tracking-[0.25em] text-luxury-gold font-medium block">II. PARURE DE RÈGLEMENT CONFIDENTIEL</span>
-              <!-- Card Brand Dynamic badge -->
               <span id="cc-brand-badge" class="text-[9px] uppercase tracking-[0.3em] text-luxury-muted border border-luxury-gold/20 px-2.5 py-0.5 rounded-full font-semibold">SECURE CARD</span>
             </div>
             
             <div class="space-y-4">
               <div>
-                <label class="text-[9px] uppercase tracking-widest text-luxury-muted font-semibold block mb-1">Nom du Titulaire de la Carte</label>
+                <label class="text-[9px] uppercase tracking-widest text-luxury-muted font-semibold block mb-1">Titulaire de la Carte</label>
                 <input type="text" id="cc-name" required placeholder="JEAN DUPONT" class="w-full bg-white/60 dark:bg-luxury-black/30 border border-luxury-gold/15 text-sm p-3 focus:outline-none focus:border-luxury-gold text-inherit rounded-xs font-light uppercase">
               </div>
               
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div class="sm:col-span-2 relative">
-                  <label class="text-[9px] uppercase tracking-widest text-luxury-muted font-semibold block mb-1">Numéro de Carte de Crédit</label>
+                  <label class="text-[9px] uppercase tracking-widest text-luxury-muted font-semibold block mb-1">Numéro de Carte</label>
                   <input type="text" id="cc-number" required maxlength="19" placeholder="4000 1234 5678 9010" class="w-full bg-white/60 dark:bg-luxury-black/30 border border-luxury-gold/15 text-sm p-3 focus:outline-none focus:border-luxury-gold text-inherit rounded-xs font-light">
-                  <!-- Visual small card indicator inside input -->
                   <div class="absolute right-3 top-7.5 text-luxury-gold text-[10px] font-semibold" id="cc-logo-preview"></div>
                 </div>
                 <div>
@@ -850,88 +797,58 @@
                   <input type="text" id="cc-exp" required maxlength="5" placeholder="MM/AA" class="w-full bg-white/60 dark:bg-luxury-black/30 border border-luxury-gold/15 text-sm p-3 focus:outline-none focus:border-luxury-gold text-inherit rounded-xs text-center font-light">
                 </div>
                 <div>
-                  <label class="text-[9px] uppercase tracking-widest text-luxury-muted font-semibold block mb-1">Code Cryptogramme (CVV)</label>
+                  <label class="text-[9px] uppercase tracking-widest text-luxury-muted font-semibold block mb-1">Cryptogramme (CVV)</label>
                   <input type="text" id="cc-cvv" required maxlength="4" placeholder="000" class="w-full bg-white/60 dark:bg-luxury-black/30 border border-luxury-gold/15 text-sm p-3 focus:outline-none focus:border-luxury-gold text-inherit rounded-xs text-center font-light">
                 </div>
-              </div>
-
-              <!-- Security guarantee -->
-              <div class="flex items-center space-x-2 pt-2 text-[10px] text-luxury-muted">
-                <svg class="w-4 h-4 text-luxury-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                <span>Sûreté bancaire AES-256 certifiée PCI-DSS de niveau 1.</span>
               </div>
             </div>
           </div>
 
         </div>
 
-        <!-- Right Side: Order Summary Component (5 Cols) -->
+        <!-- Right Side: Order Summary -->
         <div class="lg:col-span-5 bg-white/50 dark:bg-luxury-charcoal/30 border border-luxury-gold/10 p-6 md:p-8 rounded-sm space-y-6 sticky top-28">
           <span class="text-[9px] uppercase tracking-[0.25em] text-luxury-gold font-medium block">III. LE RÉCAPITULATIF DES CRÉATIONS</span>
           
-          <!-- Summary Cart items list -->
-          <div id="checkout-summary-items" class="space-y-4 max-h-[40vh] overflow-y-auto pr-2 divide-y divide-luxury-gold/10">
-            <!-- Dynamic elements added by JS -->
-          </div>
+          <div id="checkout-summary-items" class="space-y-4 max-h-[40vh] overflow-y-auto pr-2 divide-y divide-luxury-gold/10"></div>
 
-          <!-- Luxury Box Upgrade Checkbox (Upgrades final price) -->
           <div class="pt-4 border-t border-luxury-gold/10 flex items-start space-x-3">
             <input type="checkbox" id="chk-luxury-box" onchange="toggleLuxuryBox()" class="mt-1 h-4.5 w-4.5 accent-luxury-gold bg-transparent border border-luxury-gold/30 rounded-xs focus:ring-luxury-gold cursor-pointer">
             <div class="text-left">
               <label for="chk-luxury-box" class="text-xs font-serif text-inherit font-semibold cursor-pointer">Écrin de Cèdre d'Atelier (+ 50 €)</label>
-              <p class="text-[10px] text-luxury-muted leading-relaxed font-light mt-0.5">
-                Emballage sculptural de prestige en bois de cèdre poli et doublé de feutrine noire cirée protectrice.
-              </p>
             </div>
           </div>
 
-          <!-- Coupon input -->
           <div class="pt-4 border-t border-luxury-gold/10">
-            <label class="text-[9px] uppercase tracking-widest text-luxury-muted font-semibold block mb-1">Code Privilège Concierge</label>
             <div class="flex gap-2">
-              <input type="text" id="txt-coupon" placeholder="Saisir un code..." class="flex-grow bg-white/60 dark:bg-luxury-black/30 border border-luxury-gold/15 text-xs p-2 focus:outline-none focus:border-luxury-gold text-inherit rounded-xs font-light uppercase">
-              <button onclick="applyCoupon()" class="px-4 py-2 bg-luxury-black text-white text-[10px] uppercase tracking-widest font-semibold hover:bg-luxury-gold hover:text-luxury-black transition-colors rounded-xs cursor-pointer">
-                Appliquer
-              </button>
+              <input type="text" id="txt-coupon" placeholder="Code Privilège..." class="flex-grow bg-white/60 dark:bg-luxury-black/30 border border-luxury-gold/15 text-xs p-2 focus:outline-none focus:border-luxury-gold text-inherit rounded-xs font-light uppercase">
+              <button onclick="applyCoupon()" class="px-4 py-2 bg-luxury-black text-white text-[10px] uppercase tracking-widest font-semibold hover:bg-luxury-gold hover:text-white transition-colors rounded-xs cursor-pointer">Appliquer</button>
             </div>
-            <!-- Feedback under input -->
             <span id="coupon-feedback" class="text-[10px] text-emerald-600 dark:text-luxury-gold mt-1 block h-4 font-light"></span>
           </div>
 
-          <!-- Pricing summary card -->
-          <div class="pt-6 border-t border-luxury-gold/15 space-y-3">
+          <div class="pt-6 border-t border-luxury-gold/15 space-y-3 text-left">
             <div class="flex justify-between text-xs text-luxury-muted">
-              <span>Sous-total créations</span>
+              <span>Sous-total</span>
               <span id="chk-subtotal">0 €</span>
             </div>
             <div id="chk-upgrade-row" class="flex justify-between text-xs text-luxury-muted hidden">
-              <span>Écrin de Cèdre prestige</span>
+              <span>Écrin de Cèdre</span>
               <span>50 €</span>
             </div>
             <div id="chk-discount-row" class="flex justify-between text-xs text-luxury-gold hidden">
-              <span>Remise Privilège (10%)</span>
+              <span>Remise (10%)</span>
               <span id="chk-discount-value">-0 €</span>
             </div>
-            <div class="flex justify-between text-xs text-luxury-muted">
-              <span>Frais d'expédition sécurisée</span>
-              <span class="text-emerald-600 dark:text-luxury-gold uppercase tracking-widest text-[9px] font-bold">Inclus & Assuré</span>
-            </div>
-            
             <div class="flex justify-between items-baseline pt-4 border-t border-luxury-gold/10">
-              <span class="text-xs uppercase tracking-widest text-luxury-muted">Total de la Commande</span>
+              <span class="text-xs uppercase tracking-widest text-luxury-muted">Total</span>
               <span class="font-serif text-3xl text-luxury-gold font-light" id="chk-total">0 €</span>
             </div>
           </div>
 
-          <!-- CTA to Submit -->
-          <button onclick="submitCheckout()" class="w-full py-4.5 bg-luxury-gold text-luxury-black text-[11px] uppercase tracking-widest font-bold hover:bg-white hover:text-luxury-black transition-all duration-500 shadow-2xl focus:outline-none cursor-pointer">
-            Valider ma Commande Confidentielle
+          <button onclick="submitCheckout()" class="w-full py-4.5 bg-luxury-gold text-white text-[11px] uppercase tracking-widest font-bold hover:bg-white hover:text-luxury-black transition-all duration-500 shadow-2xl focus:outline-none cursor-pointer">
+            Valider ma Commande
           </button>
-
-          <span class="text-[9px] text-luxury-muted block text-center font-light leading-relaxed">
-            * Aucun débit réel ne sera effectué. Ce prototype simule une suite transactionnelle sécurisée.
-          </span>
-
         </div>
 
       </div>
@@ -940,50 +857,34 @@
   </main>
 
 
-  <!-- ==================== VIEW 3: ORDER SUCCESS COMPONENT (PEAK-END CELEBRATION) ==================== -->
+  <!-- ==================== VIEW 3: ORDER SUCCESS COMPONENT ==================== -->
   <main id="view-success" class="view-hidden pt-36 pb-24 text-center theme-transition bg-luxury-black text-white min-h-[90vh] flex flex-col justify-center items-center relative">
-    
-    <!-- Fine ambient golden glow -->
-    <div class="absolute inset-0 bg-gradient-to-t from-luxury-black via-luxury-black/90 to-luxury-black/95 pointer-events-none"></div>
     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-luxury-gold/10 blur-[150px] rounded-full pointer-events-none"></div>
 
     <div class="max-w-xl mx-auto px-6 relative z-10 space-y-8">
-      
-      <!-- Golden Animated Ring & Checkmark -->
       <div class="mx-auto w-20 h-20 rounded-full border-2 border-luxury-gold flex items-center justify-center animate-[scaleOut_1s_ease-out]">
         <svg class="w-10 h-10 text-luxury-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
       </div>
 
       <div class="space-y-4">
         <span class="text-luxury-gold text-xs uppercase tracking-[0.4em] font-medium block animate-pulse">L'ÉCLOSION DE L'ALCHIMIE</span>
-        <h2 class="font-serif text-4xl md:text-5xl font-extralight tracking-wide leading-tight">Merci, <span id="success-client-name" class="italic">Monsieur / Madame</span></h2>
+        <h2 class="font-serif text-4xl md:text-5xl font-extralight tracking-wide leading-tight">Merci, <span id="success-client-name" class="italic">Jean Dupont</span></h2>
         <div class="w-16 h-[1px] bg-luxury-gold/50 mx-auto my-4"></div>
         <p class="text-xs md:text-sm text-white/70 font-light leading-relaxed tracking-wide">
-          Votre demande de réservation a été sécurisée avec succès. Nos artisans s'affairent déjà à rassembler les étoffes et les minéraux requis pour façonner votre silhouette unique.
+          Votre demande de réservation a été sécurisée. Un Conseiller Personnel vous contactera sous 15 minutes.
         </p>
       </div>
 
-      <!-- Generated Order Number & Logistics detail -->
       <div class="bg-luxury-charcoal/40 border border-luxury-gold/20 p-6 rounded-sm text-left space-y-3 font-light text-xs text-white/80 leading-relaxed max-w-sm mx-auto">
         <div class="flex justify-between border-b border-white/5 pb-2">
-          <span class="text-luxury-gold tracking-widest text-[9px] uppercase font-semibold">Référence Atelier</span>
+          <span class="text-luxury-gold tracking-widest text-[9px] uppercase font-semibold">Référence</span>
           <span class="font-serif font-bold text-white tracking-widest text-sm" id="success-order-id">AURA-2026-X7F9</span>
         </div>
-        <p class="text-[11px] text-white/60">
-          Un e-mail de confirmation reprenant le récapitulatif de vos parures et la notice de notre service de conciergerie vient de vous être envoyé.
-        </p>
-        <p class="text-[11px] text-white/60">
-          Un <strong class="text-luxury-gold font-normal">Conseiller Personnel</strong> de la Maison prendra contact par téléphone sécurisé sous 15 minutes pour valider vos mesures de couture.
-        </p>
       </div>
 
-      <!-- Reset and Continue CTA -->
-      <div>
-        <button onclick="resetStoreAndShop()" class="px-8 py-3.5 bg-luxury-gold text-luxury-black text-[11px] uppercase tracking-widest font-semibold hover:bg-white transition-colors duration-500 focus:outline-none rounded-xs cursor-pointer shadow-xl">
-          Retourner au Salon d'Accueil
-        </button>
-      </div>
-
+      <button onclick="resetStoreAndShop()" class="px-8 py-3.5 bg-luxury-gold text-white text-[11px] uppercase tracking-widest font-semibold hover:bg-white hover:text-luxury-black transition-colors duration-500 focus:outline-none rounded-xs cursor-pointer shadow-xl">
+        Retourner au Salon
+      </button>
     </div>
   </main>
 
@@ -992,7 +893,6 @@
   <div class="fixed inset-0 z-40 bg-luxury-black/60 backdrop-blur-sm pointer-events-none opacity-0 transition-opacity duration-500" id="cart-overlay" onclick="closeCart()"></div>
   
   <div class="fixed top-0 right-0 h-full w-full max-w-md bg-luxury-cream text-luxury-black z-50 translate-x-full transition-transform duration-500 shadow-2xl p-8 flex flex-col justify-between" id="cart-drawer">
-    
     <div>
       <div class="flex justify-between items-center border-b border-luxury-black/10 pb-6 mb-6">
         <h4 class="font-serif text-2xl font-light text-luxury-black">Mon Sac d'Atelier</h4>
@@ -1000,104 +900,55 @@
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
-
-      <!-- Dynamic Item List Container -->
-      <div id="cart-items" class="space-y-6 max-h-[60vh] overflow-y-auto pr-2">
-        <div id="empty-cart-message" class="text-center py-16 text-luxury-muted text-xs tracking-wide">
-          Votre sac est actuellement vide.<br>
-          <a href="#featured-products" onclick="closeCart()" class="text-luxury-gold underline inline-block mt-4 uppercase tracking-widest text-[10px]">Explorer les Pièces</a>
-        </div>
-      </div>
+      <div id="cart-items" class="space-y-6 max-h-[60vh] overflow-y-auto pr-2"></div>
     </div>
-
-    <!-- Subtotal & Checkout Block -->
     <div class="border-t border-luxury-black/10 pt-6 mt-6 space-y-4">
       <div class="flex justify-between items-baseline">
         <span class="text-xs uppercase tracking-widest text-luxury-muted">Sous-total</span>
         <span class="font-serif text-2xl text-luxury-black font-semibold" id="cart-subtotal">0 €</span>
       </div>
-      <p class="text-[10px] text-luxury-muted leading-relaxed font-light">
-        Vos pièces d'exception seront soigneusement emballées à la main dans notre écrin en bois de hêtre ciré protecteur et expédiées sous pli ultra-sécurisé.
-      </p>
-      
-      <button onclick="proceedToCheckout()" class="w-full py-4 bg-luxury-black text-white text-[11px] uppercase tracking-widest font-semibold hover:bg-luxury-gold hover:text-luxury-black transition-colors duration-500 focus:outline-none cursor-pointer">
-        Procéder à la Réservation
-      </button>
+      <button onclick="proceedToCheckout()" class="w-full py-4 bg-luxury-black text-white text-[11px] uppercase tracking-widest font-semibold hover:bg-luxury-gold hover:text-white transition-colors duration-500 focus:outline-none cursor-pointer">Procéder à la Réservation</button>
     </div>
-
   </div>
 
 
-  <!-- ==================== ATELIER QUICK VIEW MODAL (CENTER POPUP) ==================== -->
+  <!-- ==================== ATELIER QUICK VIEW MODAL ==================== -->
   <div class="fixed inset-0 z-50 bg-luxury-black/80 backdrop-blur-md pointer-events-none opacity-0 transition-opacity duration-500 flex items-center justify-center p-4 md:p-8" id="quickview-overlay">
-    
     <div class="bg-luxury-cream text-luxury-black w-full max-w-4xl relative overflow-hidden transition-all duration-500 scale-95 opacity-0 rounded-sm" id="quickview-modal">
-      
-      <!-- Close Button -->
       <button class="absolute top-4 right-4 text-luxury-black hover:text-luxury-gold transition-colors focus:outline-none z-10 cursor-pointer" onclick="closeQuickView()">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/></svg>
       </button>
-
-      <!-- Content Grid -->
       <div class="grid grid-cols-1 md:grid-cols-12">
-        
-        <!-- Image Area (5 Cols) -->
         <div class="md:col-span-5 h-[40vh] md:h-[60vh] bg-luxury-sand">
           <img id="qv-image" src="" alt="Product Detail" class="w-full h-full object-cover">
         </div>
-
-        <!-- Detail/Selection Area (7 Cols) -->
-        <div class="md:col-span-7 p-8 md:p-12 flex flex-col justify-between h-[60vh] overflow-y-auto">
+        <div class="md:col-span-7 p-8 flex flex-col justify-between h-[60vh] overflow-y-auto">
           <div class="space-y-6">
             <div>
               <span class="text-[9px] uppercase tracking-[0.3em] text-luxury-gold font-semibold block mb-2" id="qv-category">CATEGORIE</span>
-              <h4 class="font-serif text-3xl md:text-4xl font-light text-luxury-black leading-tight" id="qv-title">Nom du produit</h4>
+              <h4 class="font-serif text-3xl font-light text-luxury-black leading-tight" id="qv-title">Nom du produit</h4>
               <span class="font-serif text-2xl text-luxury-black/90 font-light block mt-2" id="qv-price">Price</span>
             </div>
-
-            <!-- Tabs/Product Specs -->
-            <div class="border-t border-b border-luxury-black/10 py-4">
-              <p class="text-xs md:text-sm text-luxury-black/70 font-light leading-relaxed mb-4" id="qv-description">
-                Description longue...
-              </p>
-              
-              <div class="space-y-3">
-                <span class="text-[10px] uppercase tracking-wider text-luxury-muted font-semibold block">CONFECTION EN COUTURE ET OR</span>
-                <div class="grid grid-cols-2 gap-2 text-[10px] text-luxury-black/80 font-light">
-                  <div class="bg-white/50 border border-luxury-black/5 p-2 rounded-sm">Confection Sur-Mesure</div>
-                  <div class="bg-white/50 border border-luxury-black/5 p-2 rounded-sm">Garantie d'Atelier à Vie</div>
-                  <div class="bg-white/50 border border-luxury-black/5 p-2 rounded-sm">Certification Éthique RJC</div>
-                  <div class="bg-white/50 border border-luxury-black/5 p-2 rounded-sm">Écrin de Hêtre Signature</div>
-                </div>
-              </div>
+            <div class="border-t border-b border-luxury-black/10 py-4 text-left">
+              <p class="text-xs text-luxury-black/70 font-light leading-relaxed mb-4" id="qv-description">Description longue...</p>
             </div>
           </div>
-
-          <!-- Quick Action Buttons -->
           <div class="flex gap-4 items-center mt-6">
-            <button id="qv-add-btn" class="flex-grow py-4 bg-luxury-black text-white text-[11px] uppercase tracking-widest font-semibold hover:bg-luxury-gold hover:text-luxury-black transition-colors duration-500 focus:outline-none cursor-pointer">
-              Ajouter au Sac
-            </button>
-            <button onclick="closeQuickView()" class="px-6 py-4 border border-luxury-black/20 text-luxury-black text-[11px] uppercase tracking-widest font-medium hover:border-luxury-black hover:bg-white transition-all duration-300 cursor-pointer">
-              Retour
-            </button>
+            <button id="qv-add-btn" class="flex-grow py-4 bg-luxury-black text-white text-[11px] uppercase tracking-widest font-semibold hover:bg-luxury-gold hover:text-white transition-colors duration-500 focus:outline-none cursor-pointer">Ajouter au Sac</button>
           </div>
-
         </div>
-
       </div>
-
     </div>
   </div>
 
 
   <!-- ==================== JS CORE LOGIC ==================== -->
   <script>
-    // Global State Management
+    // Global State
     let cart = [];
     let wishlist = [];
-    let currentView = 'store'; // 'store', 'checkout', 'success'
-    let promoDiscount = 0; // 10% represented as 0.10
+    let currentView = 'store';
+    let promoDiscount = 0;
     let luxuryBoxUpgrade = false;
 
     const productsDb = {
@@ -1106,28 +957,28 @@
         price: 2400,
         img: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=800&q=80",
         category: "HAUTE COUTURE",
-        desc: "Magnifique robe sculptée dans un velours de soie d'un noir absolu d'une grande fluidité. Dessinée pour épouser la démarche en créant un drapé fluide saisissant. Boutons arrières en ébène précieux. Fait main en France dans nos salons historiques."
+        desc: "Magnifique robe sculptée dans un velours de soie d'un noir absolu d'une grande fluidité. Dessinée pour épouser la démarche en créant un drapé fluide saisissant. Boutons arrières en ébène précieux. Fait main en France."
       },
       blazer: {
         title: "Le Blazer Albâtre",
         price: 1850,
         img: "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=800&q=80",
         category: "HAUTE COUTURE",
-        desc: "Un chef d'œuvre tailleur d'une géométrie immaculée. Confectionné dans un double drap de soie albâtre lourd pour une tenue impériale. Boutons doublés en filigranes dorés à l'or pur de nos ateliers."
+        desc: "Un chef d'œuvre tailleur d'une géométrie immaculée. Confectionné dans un double drap de soie albâtre lourd pour une tenue impériale. Boutons doublés en filigranes dorés à l'or pur."
       },
       choker: {
         title: "Le Ras-de-Cou Aurélia",
         price: 3200,
         img: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=800&q=80",
         category: "FINE JOAILLERIE",
-        desc: "Une bande sculpturale d'or jaune 24 carats, délicatement martelée par nos orfèvres pour capter la lueur douce du soir. Équipé d'une fermeture invisible de sûreté. Une pureté géométrique sans concession."
+        desc: "Une bande sculpturale d'or jaune 24 carats, délicatement martelée par nos orfèvres pour capter la lueur douce du soir. Équipé d'une fermeture invisible de sûreté."
       },
       earrings: {
         title: "Les Cascades d'Émeraudes",
         price: 4500,
         img: "https://images.unsplash.com/photo-1635767798638-3e25273a8236?auto=format&fit=crop&w=800&q=80",
         category: "FINE JOAILLERIE",
-        desc: "Deux chutes suspendues d'émeraudes naturelles brutes de Colombie montées sur or jaune martelé éco-responsable. Chaque pierre conserve ses micro-reliefs naturels d'origine pour une vibration unique et organique."
+        desc: "Deux chutes suspendues d'émeraudes naturelles brutes de Colombie montées sur or jaune martelé éco-responsable. Chaque pierre conserve ses micro-reliefs naturels d'origine."
       }
     };
 
@@ -1147,15 +998,12 @@
         }
       });
 
-      // Show/hide Theme Switcher based on view (Success view has pinned black theme)
       const switcher = document.getElementById('theme-switcher-container');
       if (viewId === 'success') {
         switcher.classList.add('hidden');
-        // Temporarily force dark styling for success page background
         document.getElementById('body').classList.add('bg-luxury-black');
       } else {
         switcher.classList.remove('hidden');
-        // Restore currently active theme class
         const btnDark = document.getElementById('btn-theme-dark');
         if (btnDark.classList.contains('bg-white')) {
           setTheme('dark');
@@ -1164,7 +1012,6 @@
         }
       }
 
-      // Scroll smoothly to top on view switch
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -1175,20 +1022,18 @@
       
       if (index === -1) {
         wishlist.push(productTitle);
-        // Toggle filled heart in gold
-        svg.setAttribute('fill', '#C5A880');
-        svg.setAttribute('stroke', '#C5A880');
+        svg.setAttribute('fill', '#1B365D');
+        svg.setAttribute('stroke', '#1B365D');
         btnEl.classList.add('scale-110');
         setTimeout(() => btnEl.classList.remove('scale-110'), 200);
       } else {
         wishlist.splice(index, 1);
-        // Revert hollow heart
         svg.setAttribute('fill', 'none');
         svg.setAttribute('stroke', 'currentColor');
       }
     }
 
-    // Customizer State & Toggles
+    // Customizer States
     let currentOutfit = 'gown';
     let currentJewelry = 'choker';
 
@@ -1208,7 +1053,46 @@
       updateSynergy();
     }
 
-    // Atmosphère Theme Switcher (Bespoke Light/Dark Luxury Theme)
+    const customizerData = {
+      outfits: {
+        gown: { title: "La Robe Obscure en Soie", price: 2400, img: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=600&q=80" },
+        blazer: { title: "Le Blazer Albâtre", price: 1850, img: "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=600&q=80" }
+      },
+      jewelry: {
+        choker: { title: "Le Ras-de-Cou Aurélia", price: 3200, img: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=600&q=80" },
+        earrings: { title: "Les Cascades d'Émeraudes", price: 4500, img: "https://images.unsplash.com/photo-1635767798638-3e25273a8236?auto=format&fit=crop&w=600&q=80" }
+      },
+      synergies: {
+        'gown_choker': { title: "Harmonie Obscure", desc: "Un dialogue nocturne saisissant. La structure profonde du velours de soie noire sublime la matité lumineuse du Bleu de Minuit." },
+        'gown_earrings': { title: "Cascade Impériale", desc: "La robe noire d'ébène s'éveille sous l'éclat vert acide de nos émeraudes précieuses." },
+        'blazer_choker': { title: "Silhouette de Lumière", desc: "Le blanc pur rencontre le bleu impérial. Une allure moderne, lumineuse et structurée d'élégance." },
+        'blazer_earrings': { title: "Albâtre Émeraude", desc: "Un équilibre magistral de lumière et de couleur sauvage. Le tailleur ivoire magnifie le vert de l'émeraude." }
+      }
+    };
+
+    function getButtonClass(isSelected) {
+      if (isSelected) {
+        return "w-1/2 flex justify-between items-center p-3 border border-luxury-gold text-left transition-all duration-500 bg-luxury-charcoal/40 backdrop-blur-sm group cursor-pointer text-xs rounded-sm";
+      } else {
+        return "w-1/2 flex justify-between items-center p-3 border border-white/10 text-left transition-all duration-500 bg-transparent group hover:border-luxury-gold/40 cursor-pointer text-xs rounded-sm";
+      }
+    }
+
+    function updateSynergy() {
+      const key = `${currentOutfit}_${currentJewelry}`;
+      const synergy = customizerData.synergies[key];
+      const price = customizerData.outfits[currentOutfit].price + customizerData.jewelry[currentJewelry].price;
+
+      document.getElementById('synergy-title').innerText = synergy.title;
+      document.getElementById('synergy-description').innerText = `"${synergy.desc}"`;
+      document.getElementById('synergy-price').innerText = formatPrice(price);
+    }
+
+    function formatPrice(num) {
+      return num.toLocaleString('fr-FR') + ' €';
+    }
+
+    // Atmosphère Theme Switcher
     function setTheme(mode) {
       const body = document.getElementById('body');
       const btnLight = document.getElementById('btn-theme-light');
@@ -1217,15 +1101,11 @@
       if (mode === 'dark') {
         body.classList.remove('bg-luxury-cream', 'text-luxury-black');
         body.classList.add('bg-luxury-black', 'text-white');
-        
-        // Update switcher buttons class
         btnLight.className = "px-2.5 py-1 rounded-full text-white/60 hover:text-white transition-all";
         btnDark.className = "px-2.5 py-1 rounded-full bg-white text-luxury-black transition-all font-semibold";
       } else {
         body.classList.remove('bg-luxury-black', 'text-white');
         body.classList.add('bg-luxury-cream', 'text-luxury-black');
-
-        // Update switcher buttons class
         btnLight.className = "px-2.5 py-1 rounded-full bg-white text-luxury-black transition-all font-semibold";
         btnDark.className = "px-2.5 py-1 rounded-full text-white/60 hover:text-white transition-all";
       }
@@ -1237,18 +1117,6 @@
       menu.classList.toggle('translate-x-full');
     }
 
-    // Scroll Header Styling Adjustments
-    window.addEventListener('scroll', () => {
-      const header = document.getElementById('main-header');
-      if (window.scrollY > 50) {
-        header.classList.remove('py-4', 'bg-luxury-black/95');
-        header.classList.add('py-2', 'bg-luxury-black/98');
-      } else {
-        header.classList.remove('py-2', 'bg-luxury-black/98');
-        header.classList.add('py-4', 'bg-luxury-black/95');
-      }
-    });
-
     // Cart Operations
     function addToCart(title, price, img) {
       const existing = cart.find(item => item.title === title);
@@ -1259,10 +1127,9 @@
       }
       updateCartUi();
 
-      // Doherty Feedback Animation
       const countEl = document.getElementById('cart-count');
       countEl.classList.remove('counter-pulse');
-      void countEl.offsetWidth; // Trigger reflow
+      void countEl.offsetWidth;
       countEl.classList.add('counter-pulse');
     }
 
@@ -1293,8 +1160,8 @@
 
       if (cart.length === 0) {
         container.innerHTML = `
-          <div id="empty-cart-message" class="text-center py-16 text-luxury-muted text-xs tracking-wide">
-            Votre sac est actuellement vide.<br>
+          <div class="text-center py-16 text-luxury-muted text-xs tracking-wide">
+            Votre sac est vide.<br>
             <a href="#featured-products" onclick="closeCart()" class="text-luxury-gold underline inline-block mt-4 uppercase tracking-widest text-[10px]">Explorer les Pièces</a>
           </div>
         `;
@@ -1317,7 +1184,6 @@
             <div class="flex-grow text-left">
               <h5 class="font-serif text-sm font-light">${item.title}</h5>
               <span class="text-xs text-luxury-gold block font-serif mt-1">${item.price.toLocaleString('fr-FR')} €</span>
-              
               <div class="flex items-center space-x-3 mt-2">
                 <button onclick="changeQuantity('${item.title}', -1)" class="text-luxury-muted hover:text-luxury-black focus:outline-none text-xs px-1 cursor-pointer">-</button>
                 <span class="text-xs font-medium">${item.quantity}</span>
@@ -1325,7 +1191,7 @@
               </div>
             </div>
             <div class="text-right flex flex-col justify-between h-20">
-              <button onclick="removeFromCart('${item.title}')" class="text-[9px] text-red-500 uppercase tracking-wider hover:text-red-700 focus:outline-none self-end cursor-pointer">Retirer</button>
+              <button onclick="removeFromCart('${item.title}')" class="text-[9px] text-red-500 uppercase tracking-wider hover:text-red-700 focus:outline-none cursor-pointer">Retirer</button>
               <span class="font-serif text-xs font-semibold">${itemTotal.toLocaleString('fr-FR')} €</span>
             </div>
           </div>
@@ -1338,18 +1204,16 @@
     }
 
     function openCart() {
-      document.getElementById('cart-overlay').classList.remove('pointer-events-none', 'opacity-0');
-      document.getElementById('cart-overlay').classList.add('opacity-100');
+      document.getElementById('cart-overlay').classList.add('opacity-100', 'pointer-events-auto');
       document.getElementById('cart-drawer').classList.add('drawer-open');
     }
 
     function closeCart() {
-      document.getElementById('cart-overlay').classList.remove('opacity-100');
-      document.getElementById('cart-overlay').classList.add('pointer-events-none', 'opacity-0');
+      document.getElementById('cart-overlay').classList.remove('opacity-100', 'pointer-events-auto');
       document.getElementById('cart-drawer').classList.remove('drawer-open');
     }
 
-    // Quick View Operations
+    // Quick View
     function openQuickView(productId) {
       const prod = productsDb[productId];
       if (!prod) return;
@@ -1366,17 +1230,19 @@
         setTimeout(openCart, 300);
       };
 
-      const overlay = document.getElementById('quickview-overlay');
-      const modal = document.getElementById('quickview-modal');
-
-      overlay.classList.add('modal-active');
-      modal.classList.add('modal-content-active');
+      document.getElementById('quickview-overlay').classList.add('modal-active');
+      document.getElementById('quickview-modal').classList.add('modal-content-active');
     }
 
-    // Checkout Flow Manager
+    function closeQuickView() {
+      document.getElementById('quickview-overlay').classList.remove('modal-active');
+      document.getElementById('quickview-modal').classList.remove('modal-content-active');
+    }
+
+    // Checkout
     function proceedToCheckout() {
       if (cart.length === 0) {
-        alert("Votre sac d'Atelier est vide. Veuillez sélectionner des silhouettes ou des parures.");
+        alert("Votre sac d'Atelier est vide.");
         return;
       }
       closeCart();
@@ -1398,11 +1264,11 @@
 
         html += `
           <div class="flex gap-4 items-center py-4 text-left">
-            <div class="w-12 h-16 bg-luxury-sand overflow-hidden flex-shrink-0 rounded-xs border border-luxury-gold/10">
+            <div class="w-12 h-16 bg-luxury-sand overflow-hidden flex-shrink-0 border border-luxury-gold/10">
               <img src="${item.img}" alt="${item.title}" class="w-full h-full object-cover">
             </div>
-            <div class="flex-grow">
-              <h5 class="font-serif text-xs font-light text-inherit leading-snug">${item.title}</h5>
+            <div class="flex-grow text-luxury-black">
+              <h5 class="font-serif text-xs font-light leading-snug">${item.title}</h5>
               <span class="text-[10px] text-luxury-muted mt-1 block">Qté : ${item.quantity}</span>
             </div>
             <div class="text-right">
@@ -1414,22 +1280,14 @@
 
       summaryContainer.innerHTML = html;
       chkSubtotalEl.innerText = subtotal.toLocaleString('fr-FR') + ' €';
-      
-      // Recalculate full totals
       recalculateFinalCheckoutPrice(subtotal);
     }
 
     function toggleLuxuryBox() {
       luxuryBoxUpgrade = document.getElementById('chk-luxury-box').checked;
       const upgradeRow = document.getElementById('chk-upgrade-row');
-      
-      if (luxuryBoxUpgrade) {
-        upgradeRow.classList.remove('hidden');
-      } else {
-        upgradeRow.classList.add('hidden');
-      }
-      
-      // Recalculate
+      if (luxuryBoxUpgrade) upgradeRow.classList.remove('hidden');
+      else upgradeRow.classList.add('hidden');
       const subtotal = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
       recalculateFinalCheckoutPrice(subtotal);
     }
@@ -1439,7 +1297,7 @@
       const feedback = document.getElementById('coupon-feedback');
       
       if (couponInput === 'AURA2026' || couponInput === 'CONCIERGE') {
-        promoDiscount = 0.10; // 10% discount
+        promoDiscount = 0.10;
         feedback.innerText = "✓ Code privilège appliqué : -10% de remise.";
         feedback.className = "text-[10px] text-emerald-600 dark:text-emerald-400 mt-1 block h-4 font-light";
       } else {
@@ -1454,10 +1312,7 @@
 
     function recalculateFinalCheckoutPrice(subtotal) {
       let total = subtotal;
-      
-      if (luxuryBoxUpgrade) {
-        total += 50;
-      }
+      if (luxuryBoxUpgrade) total += 50;
       
       const discountRow = document.getElementById('chk-discount-row');
       const discountValEl = document.getElementById('chk-discount-value');
@@ -1465,7 +1320,6 @@
       if (promoDiscount > 0) {
         const discountAmount = Math.round(subtotal * promoDiscount);
         total -= discountAmount;
-        
         discountValEl.innerText = `-${discountAmount.toLocaleString('fr-FR')} €`;
         discountRow.classList.remove('hidden');
       } else {
@@ -1475,7 +1329,6 @@
       document.getElementById('chk-total').innerText = total.toLocaleString('fr-FR') + ' €';
     }
 
-    // Checkout Submission
     function submitCheckout() {
       const firstName = document.getElementById('chk-first-name').value.trim();
       const lastName = document.getElementById('chk-last-name').value.trim();
@@ -1490,28 +1343,21 @@
       const ccExp = document.getElementById('cc-exp').value.trim();
       const ccCvv = document.getElementById('cc-cvv').value.trim();
 
-      // Client-side Validation (Laws of UX: friendly errors, immediate feedback)
       if (!firstName || !lastName || !address || !city || !zip || !phone || !email || !ccName || !ccNum || !ccExp || !ccCvv) {
-        alert("CONCIERGERIE AURA :\n\nVeuillez renseigner l'ensemble de vos coordonnées et informations de paiement sécurisé afin de valider vos silhouettes.");
+        alert("CONCIERGERIE AURA :\n\nVeuillez renseigner vos coordonnées complètes.");
         return;
       }
 
-      // Generate dynamic successful order screen details
       document.getElementById('success-client-name').innerText = `${firstName} ${lastName}`;
-      
       const randHex = Math.floor(Math.random() * 0xfffff).toString(16).toUpperCase();
       document.getElementById('success-order-id').innerText = `AURA-2026-${randHex}`;
 
-      // Cross-fade views (Peak-End Rule celebration)
       showView('success');
-      
-      // Clear Cart state
       cart = [];
       updateCartUi();
     }
 
     function resetStoreAndShop() {
-      // Restore default input form values
       document.getElementById('chk-first-name').value = '';
       document.getElementById('chk-last-name').value = '';
       document.getElementById('chk-address').value = '';
@@ -1529,78 +1375,118 @@
       promoDiscount = 0;
       luxuryBoxUpgrade = false;
 
-      // Go back to storefront
       showView('store');
     }
 
-    function closeQuickView() {
-      const overlay = document.getElementById('quickview-overlay');
-      const modal = document.getElementById('quickview-modal');
-
-      overlay.classList.remove('modal-active');
-      modal.classList.remove('modal-content-active');
+    // Shoppable Hotspots
+    let activeHotspotId = null;
+    function toggleHotspot(id) {
+      const pop = document.getElementById(id);
+      if (activeHotspotId && activeHotspotId !== id) {
+        const prev = document.getElementById(activeHotspotId);
+        prev.classList.add('opacity-0', 'pointer-events-none');
+        prev.classList.remove('opacity-100', 'pointer-events-auto');
+      }
+      if (pop.classList.contains('pointer-events-none')) {
+        pop.classList.remove('opacity-0', 'pointer-events-none');
+        pop.classList.add('opacity-100', 'pointer-events-auto');
+        activeHotspotId = id;
+      } else {
+        pop.classList.add('opacity-0', 'pointer-events-none');
+        pop.classList.remove('opacity-100', 'pointer-events-auto');
+        activeHotspotId = null;
+      }
     }
 
-    // ==================== POSTEL'S LAW FORM INPUT PARSERS (laws-of-ux) ====================
-    
-    // Credit Card Input formatting (Adding spaces every 4 chars, numeric only, dynamically identifying brand logo)
-    const ccInput = document.getElementById('cc-number');
-    ccInput.addEventListener('input', function(e) {
-      let val = e.target.value.replace(/\D/g, ''); // Extract numbers only (liberal input handling)
-      let formattedVal = '';
-      
-      for (let i = 0; i < val.length; i++) {
-        if (i > 0 && i % 4 === 0) {
-          formattedVal += ' ';
-        }
-        formattedVal += val[i];
-      }
-      
-      e.target.value = formattedVal; // Restrict output cleanly
-
-      // Detect Brand based on First Digit
-      const badge = document.getElementById('cc-brand-badge');
-      const miniLogo = document.getElementById('cc-logo-preview');
-      
-      if (val.length > 0) {
-        const firstDigit = val[0];
-        if (firstDigit === '4') {
-          badge.innerText = 'VISA CONCIERGE';
-          miniLogo.innerText = 'VISA';
-        } else if (firstDigit === '5') {
-          badge.innerText = 'MASTERCARD BLACK';
-          miniLogo.innerText = 'MC';
-        } else if (firstDigit === '3') {
-          badge.innerText = 'AMERICAN EXPRESS';
-          miniLogo.innerText = 'AMEX';
-        } else {
-          badge.innerText = 'SECURE CARD';
-          miniLogo.innerText = '';
-        }
-      } else {
-        badge.innerText = 'SECURE CARD';
-        miniLogo.innerText = '';
+    document.addEventListener('click', function(e) {
+      if (activeHotspotId && !e.target.closest('.hotspot-pulse') && !e.target.closest('[id^="hotspot-pop-"]')) {
+        const pop = document.getElementById(activeHotspotId);
+        pop.classList.add('opacity-0', 'pointer-events-none');
+        pop.classList.remove('opacity-100', 'pointer-events-auto');
+        activeHotspotId = null;
       }
     });
 
-    // Credit Card Expiration Input formatting (Adding slash MM/YY, numeric only)
+    // Credit Card Masking & Expiration format
+    const ccInput = document.getElementById('cc-number');
+    ccInput.addEventListener('input', function(e) {
+      let val = e.target.value.replace(/\D/g, '');
+      let formattedVal = '';
+      for (let i = 0; i < val.length; i++) {
+        if (i > 0 && i % 4 === 0) formattedVal += ' ';
+        formattedVal += val[i];
+      }
+      e.target.value = formattedVal;
+      const badge = document.getElementById('cc-brand-badge');
+      const miniLogo = document.getElementById('cc-logo-preview');
+      if (val.length > 0) {
+        const firstDigit = val[0];
+        if (firstDigit === '4') { badge.innerText = 'VISA CONCIERGE'; miniLogo.innerText = 'VISA'; }
+        else if (firstDigit === '5') { badge.innerText = 'MASTERCARD BLACK'; miniLogo.innerText = 'MC'; }
+        else if (firstDigit === '3') { badge.innerText = 'AMERICAN EXPRESS'; miniLogo.innerText = 'AMEX'; }
+        else { badge.innerText = 'SECURE CARD'; miniLogo.innerText = ''; }
+      } else {
+        badge.innerText = 'SECURE CARD'; miniLogo.innerText = '';
+      }
+    });
+
     const expInput = document.getElementById('cc-exp');
     expInput.addEventListener('input', function(e) {
       let val = e.target.value.replace(/\D/g, '');
       let formatted = '';
-      if (val.length > 2) {
-        formatted = val.substring(0, 2) + '/' + val.substring(2, 4);
-      } else {
-        formatted = val;
-      }
+      if (val.length > 2) formatted = val.substring(0, 2) + '/' + val.substring(2, 4);
+      else formatted = val;
       e.target.value = formatted;
     });
 
-    // CVV input restriction to digits only
-    const cvvInput = document.getElementById('cc-cvv');
-    cvvInput.addEventListener('input', function(e) {
+    document.getElementById('cc-cvv').addEventListener('input', function(e) {
       e.target.value = e.target.value.replace(/\D/g, '');
     });
+
+    // ==================== LAWS OF UX / FASHION OBSERVATION MOTOR ====================
+    document.addEventListener("DOMContentLoaded", () => {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            // Couture Fade Reveal
+            entry.target.querySelectorAll(".reveal-item").forEach(el => {
+              el.classList.add('active');
+            });
+            // Background slow zoom
+            const img = entry.target.querySelector(".bg-zoom-image");
+            if (img) img.classList.add('active');
+            
+            // Dim covered slides below
+            manageSlideDimming(entry.target.id);
+          } else {
+            entry.target.querySelectorAll(".reveal-item").forEach(el => {
+              el.classList.remove('active');
+            });
+            const img = entry.target.querySelector(".bg-zoom-image");
+            if (img) img.classList.remove('active');
+          }
+        });
+      }, {
+        threshold: 0.4
+      });
+
+      document.querySelectorAll(".snap-slide").forEach(sec => {
+        observer.observe(sec);
+      });
+    });
+
+    function manageSlideDimming(activeSlideId) {
+      const slides = ['slide-hero', 'slide-story', 'slide-collections', 'slide-fabrics', 'slide-customizer', 'slide-products', 'slide-shoppable', 'slide-journal', 'slide-footer'];
+      const activeIdx = slides.indexOf(activeSlideId);
+      
+      slides.forEach((id, idx) => {
+        const el = document.getElementById(id);
+        if (el) {
+          if (idx < activeIdx) el.classList.add('covered');
+          else el.classList.remove('covered');
+        }
+      });
+    }
   </script>
 
 </body>
